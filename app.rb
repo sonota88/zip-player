@@ -94,32 +94,29 @@ class App
 
 
   def init_widget_monitor
+    monitor_font = TkFont.new({'family' => 'pgothic',
+                                'weight' => 'bold',
+                                'slant' => 'roman',
+                                'underline' => false,
+                                'overstrike' => false,
+                                "size" => 12
+                              })
+
     @lbl_title = TkLabel.new {
       bg("#88ff00")
       text "title"
-      font TkFont.new({'family' => 'pgothic',
-                        'weight' => 'bold',
-                        'slant' => 'roman',
-                        'underline' => false,
-                        'overstrike' => false,
-                        "size" => 12
-                      })
+      font monitor_font
     }
     @lbl_by = TkLabel.new {
       bg("#88ff00")
       text "by"
-      font TkFont.new({'family' => 'pgothic',
-                        'weight' => 'bold',
-                        'slant' => 'roman',
-                        'underline' => false,
-                        'overstrike' => false,
-                        "size" => 12
-                      })
+      font monitor_font
     }
 
     @lbl_time = TkLabel.new{      text("--:--:--")
       bg("#88ff00")
       pady 6 ; padx 16
+      font monitor_font
     }
 
     @lbl_title.pack(:fill => :both, :expand => true)

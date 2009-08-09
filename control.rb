@@ -77,6 +77,8 @@ class Control
 
     info << "volume: #{tr.volume}"
     info << "\n"
+    info << "license: #{tr.license_abbr}"
+    info << "\n"
     info << "-" * 32
     info << "\n"
     info << tr.ya2yaml
