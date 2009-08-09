@@ -301,7 +301,7 @@ class Control
 
     temp_index = $pl.current_index
 
-    AlbumInfo.edit_albuminfo($arc_file, tempfile, :overwrite)
+    AlbumInfo.edit_albuminfo($arc_file, :overwrite)
     $pl.clear
     append_archive_file($pl, $arc_file, $temp_dir)
     

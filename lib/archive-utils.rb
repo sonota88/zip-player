@@ -409,8 +409,8 @@ def append_archive_file(playlist,
     if info["licenses"]
       template.licenses = info["licenses"]
     elsif info["license_url"]
-      ## obsolete!
-      template.license_url = info["license_url"]
+      $stderr.puts "license_url is obsolete!"
+      #template.license_url = info["license_url"]
     end
 
     template.artists = info["artists"] if info["artists"]

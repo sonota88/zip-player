@@ -246,7 +246,7 @@ donation_info_url:
     template, invalid_text = album_info_template()
     preedit_str = ""
     preedit_str << template.ya2yaml
-    preedit_str << "\n..."
+    preedit_str << "\n...\n"
     if invalid_text
       preedit_str << invalid_text
     else
