@@ -23,9 +23,22 @@ end
 
 def get_id3_frame(path, id)
   #tag = ID3Lib::Tag.new(path)
-  #tag = ID3Lib::Tag.new(path, ID3Lib::V1)
   tag = ID3Lib::Tag.new(path, ID3Lib::V2)
+  tag.each do |frame|
+    if frame[:id] == id
+      if frame[:textenc] && frame[:text]
+        if frame[:textenc] == 1
+          frame[:text_u8] = kconv_u16tou8( frame[:text] )
+        else
+          frame[:text_u8] = frame[:text]
+        end
+      end
+      return frame
+    end
+  end
 
+  # if failed with ID3Lib::V2 then
+  tag = ID3Lib::Tag.new(path, ID3Lib::V1)
   tag.each do |frame|
     if frame[:id] == id
       if frame[:textenc] && frame[:text]
@@ -201,7 +214,7 @@ def read_metadata(path, local_path)
 
   case ext
   when ".ogg", ".oga"
-   comment = VorbisComment.new(local_path)
+    comment = VorbisComment.new(local_path)
     title = comment.fields["TITLE"].join(" / ")
     album_title = comment.fields["ALBUM"].join(" / ") rescue nil
     
@@ -455,7 +468,7 @@ if $0 == __FILE__
  #  tag = read_metadata("Yoma_Aoki__02 - girl age ガールエージ.mp3",
 #                       "test/sample/Yoma_Aoki__02 - girl age ガールエージ.mp3")
 
-  path = "test/sample/Yoma_Aoki__02 - girl age ガールエージ.mp3"
+  path = ARGV[0]
 #   tag = ID3Lib::Tag.new(path, ID3Lib::V1)
 #   pp tag; puts "====================================="
 #   tag = ID3Lib::Tag.new(path, ID3Lib::V2)
@@ -463,4 +476,7 @@ if $0 == __FILE__
   tag = ID3Lib::Tag.new(path).each{|t|
     pp t; puts "====================================="
   }
+
+  tag = read_metadata(ARGV[0], ARGV[0])
+  pp tag
 end
