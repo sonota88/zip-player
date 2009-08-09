@@ -432,7 +432,7 @@ def append_archive_file(playlist,
   
   tracks = arc_get_tracks(arc_path, template, temp_dir)
 
-  tracks.each do |track|
+  tracks.sort_by{|tr| tr.track_number }.each do |track|
     append_to_playlist(playlist, track)
   end
 end

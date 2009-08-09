@@ -247,7 +247,7 @@ class App
     @lbox_playlist.delete(0, :end)
     
     n = 0
-    $pl.each{|track|
+    $pl.each{|tr|
 #       artist = if not track.get_artists() ; "?"
 #                else                       ; track.get_artists()
 #                end
@@ -255,8 +255,9 @@ class App
       # append item
       @lbox_playlist.insert(
                             :end,
-                            sprintf("%4s: #{track.title}",
-                                    n+1
+                            sprintf("%4s:% 3d #{tr.title}",
+                                    n+1,
+                                    tr.track_number
                                     )
                             )
       n += 1
