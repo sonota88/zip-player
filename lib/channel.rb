@@ -97,7 +97,7 @@ class Track
   # not essential
   attr_accessor :label, :date
   attr_accessor :tags, :sys_tags
-  attr_accessor :description, :track_number
+  attr_accessor :description
   attr_accessor :cast_from, :file_exist_flag
   #  attr_accessor :album_title, :album_id
   attr_accessor :album
@@ -121,6 +121,24 @@ class Track
     @description = ""
     @donation_info_url = nil
   end
+
+
+  def track_number
+    case @track_number
+    when /\A(\d+)\/(\d+)\z/
+      return $1.to_i
+    when /\d+/
+      return $&.to_i
+    else
+      return 0
+    end
+  end
+
+
+  def track_number=(x)
+    @track_number = x
+  end
+
 
 #   def import(obj)
 #     @artists = obj.artists.map{|a| a }

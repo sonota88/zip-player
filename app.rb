@@ -39,32 +39,7 @@ class App
     @seekbar_pressed = nil
 
     init_widget_monitor()
-
-    @seekbar = TkScale.new{
-      from 0
-      to 100
-      orient "horizontal"
-      borderwidth 1
-      showvalue false
-    }
-    
-    # detect click seekbar
-    @seekbar.bind "ButtonPress-1", proc { 
-      @pos_start = @percent
-      puts @pos_start
-      @seekbar_pressed = true
-    }
-
-    # スライダーから離れたらシーク実行
-    @seekbar.bind "ButtonRelease-1", proc { 
-      diff = @seekbar.value - @control.percent
-      puts "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
-      @control.seek_percent(@seekbar.value)
-      @seekbar_pressed = false
-    }
-
-    @seekbar.pack(:fill => :both, :expand => true)
-
+    init_widget_seekbar()
     init_widget_console()
     init_widget_misc()
     init_widget_playlist()
@@ -122,6 +97,34 @@ class App
     @lbl_title.pack(:fill => :both, :expand => true)
     @lbl_by.pack(:fill => :both, :expand => true)
     @lbl_time.pack(:fill => :both, :expand => true)
+  end
+
+
+  def init_widget_seekbar
+    @seekbar = TkScale.new{
+      from 0
+      to 100
+      orient "horizontal"
+      borderwidth 1
+      showvalue false
+    }
+    
+    # detect click seekbar
+    @seekbar.bind "ButtonPress-1", proc { 
+      @pos_start = @percent
+      puts @pos_start
+      @seekbar_pressed = true
+    }
+
+    # スライダーから離れたらシーク実行
+    @seekbar.bind "ButtonRelease-1", proc { 
+      diff = @seekbar.value - @control.percent
+      puts "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
+      @control.seek_percent(@seekbar.value)
+      @seekbar_pressed = false
+    }
+
+    @seekbar.pack(:fill => :both, :expand => true)
   end
 
   
@@ -240,6 +243,9 @@ class App
     @btn_edit_albuminfo.pack(:side => :left)
     @btn_quit.pack(:side => :left)
   end
+
+
+  ################################################################
   
 
   def update_listbox

@@ -324,6 +324,7 @@ def arc_get_tracks(arc_path, template, dir_temp)
     #list = file_list_zip(local_path)
     list = file_list_zip(arc_path)
 
+    count = 1
     list.each do |entry|
       ext = File.extname(entry)
       next unless /^\.(ogg|oga|flac|mp3)$/ =~ ext
@@ -334,7 +335,6 @@ def arc_get_tracks(arc_path, template, dir_temp)
                                entry, 
                                File.join(dir_temp, "000#{ext}") 
                                )
-      #STDERR.puts "AAAAAAAAAAAAAAAAAAAa", temp_audio_path #if $VERBOSE
       
       ## タグ読む
       begin
@@ -346,7 +346,11 @@ def arc_get_tracks(arc_path, template, dir_temp)
       end
       
       FileUtils.rm(temp_audio_path)
+
+      $stderr.print "t#{count} "
+      count += 1
     end
+    $stderr.print "\n"
   end
   #puts result.to_yaml
 
@@ -356,10 +360,7 @@ end
 
 def append_to_playlist(playlist, tr)
   if not playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash )
-#    if tr.title != nil
-#    y tr
-      playlist << tr
-#    end
+    playlist << tr
   end
 end
 
