@@ -281,8 +281,12 @@ class App
   
   def set_label(lbl_name, str)
     if eval( "@lbl_#{lbl_name}" )
-      str.gsub!('"', "\\"+'"' )
-      eval %Q!@lbl_#{lbl_name}.text "#{str}"!
+      begin
+        str.gsub!('"', "\\"+'"' )
+        eval %Q!@lbl_#{lbl_name}.text "#{str}"!
+      rescue SyntaxError
+        eval %Q!@lbl_#{lbl_name}.text #{str.inspect}!
+      end
     end
   end
 
