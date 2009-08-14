@@ -222,8 +222,8 @@ def read_metadata(path, local_path)
       artists << {'name'=>a} 
     }
 
-    license['url'] = comment.fields["LICENSE"].join(" / ")
-    license['verify_at'] = comment.fields["VERIFY_AT"].join(" / ")
+    license['url'] = comment.fields["LICENSE"].join(" / ") if comment.fields["LICENSE"]
+    license['verify_at'] = comment.fields["VERIFY_AT"].join(" / ") if comment.fields["VERIFY_AT"]
     
     if comment.fields["TRACKNUMBER"]
       tr_num = comment.fields["TRACKNUMBER"].to_s
