@@ -322,8 +322,9 @@ def arc_get_tracks(arc_path, template, dir_temp)
   case File.extname(arc_path)
   when /^\.zip$/i
     #list = file_list_zip(local_path)
-    list = file_list_zip(arc_path)
-
+    list = file_list_zip(arc_path).
+      select{|e| /^__MACOSX\// !~ e }
+    
     count = 1
     list.each do |entry|
       ext = File.extname(entry)
