@@ -1,6 +1,8 @@
 #!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 
+$LOAD_PATH << File.dirname(__FILE__)
+
 require "kconv"
 require "pp"
 
@@ -96,6 +98,7 @@ def file_list_zip(arc_path)
       result << ar.get_name(i) # get entry name from archive
     end
   end
+
   return result
 end
 
@@ -127,15 +130,28 @@ def get_tracks_zip(target)
 end
 
 
+def arc_root_dir(arc_path)
+  list = file_list_zip(arc_path).map{ |path|
+    path.sub(/^(.+?)\/.*$/, '\1')
+  }
+  
+  if list.all?{|x| list.first == x }
+    return list.first
+  else
+    return nil
+  end
+end
+
+
 def arc_cp(arc_path, entry, dest_path)
-  $stderr.puts "arc_path: #{arc_path}" if $DEBUG
+  $stderr.puts "arc_path: #{arc_path}" # if $DEBUG
   temp_path = nil
 
   raise "could not find #{arc_path}" if not File.exist?(arc_path)
 
   Zip::Archive.open( arc_path ) do |ar|
     ar.each do |zf|
-      # $stderr.puts "^^ #{zf.name} ^^^^^^^^^^^^^^^^^^^^^^^"
+      warn "^^ #{zf.name} ^^^^^^^^^^^^^^^^^^^^^^^"
       next if zf.name != entry
       # puts zf.name
 
@@ -150,7 +166,7 @@ def arc_cp(arc_path, entry, dest_path)
         else
           temp_path = dest_path
         end
-        # puts "temp_path = #{temp_path}"
+        warn "temp_path = #{temp_path}"
         open( temp_path, 'wb') do |f|
           f << zf.read
         end
@@ -219,7 +235,7 @@ def read_metadata(path, local_path)
     album_title = comment.fields["ALBUM"].join(" / ") rescue nil
     
     comment.fields["ARTIST"].map{|a|
-      artists << {'name'=>a} 
+      artists << {'name'=>a}
     }
 
     license['url'] = comment.fields["LICENSE"].join(" / ") if comment.fields["LICENSE"]
@@ -271,7 +287,7 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   if arc_template
     audio_path = File.join(dir_temp, File.basename(path))
   else
-    audio_path = File.join($PREFS.DIR_CACHE_SUB, path) 
+    audio_path = File.join($PREFS.DIR_CACHE_SUB, path)
   end
 
   tr = Track.new
@@ -332,9 +348,9 @@ def arc_get_tracks(arc_path, template, dir_temp)
 
       ## 一時ファイル取り出す
       #temp_audio_path = arc_cp(local_path, entry, File.join($PREFS.DIR_TEMP, "000#{ext}") )
-      temp_audio_path = arc_cp(arc_path, 
-                               entry, 
-                               File.join(dir_temp, "000#{ext}") 
+      temp_audio_path = arc_cp(arc_path,
+                               entry,
+                               File.join(dir_temp, "000#{ext}")
                                )
       
       ## タグ読む
@@ -366,7 +382,7 @@ def append_to_playlist(playlist, tr)
 end
 
 
-def append_archive_file(playlist, 
+def append_archive_file(playlist,
                         arc_path, # basename
                         temp_dir
                         )
@@ -400,7 +416,7 @@ def append_archive_file(playlist,
   # テンプレートtrack作成
   template = Track.new
   if info
-    if info['album'] 
+    if info['album']
       template.album['title'] = if info['album']['title']
                                   info['album']['title']
                                 else

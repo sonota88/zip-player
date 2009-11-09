@@ -1,21 +1,24 @@
-#!/usr/bin/ruby -Ku
-
+#!/usr/bin/ruby
+# -*- coding: utf-8 -*-
 
 require "tk"
 require "observer"
 
-require "anbt-mplayer-ctl"
-require "archive-utils"
-require "control"
-require "#{$app_home}/album-info"
+require "lib/anbt-mplayer-ctl"
+require "lib/archive-utils"
+require "lib/control"
+require "lib/album-info"
+
 
 $temp_dir = "temp"
 $web_browser = "firefox"
 $PLAYING_ITEM_BGCOLOR = "#cccccc"
 
+$ImageManipulate = false
+
+require "tkextlib/tkimg" if $ImageManipulate
+
 Thread.abort_on_exception = true
-
-
 
 
 def init
@@ -26,8 +29,6 @@ def init
   $arc_file = ARGV[0]
   append_archive_file($pl, $arc_file, $temp_dir)
 end
-
-
 
 
 class App
@@ -69,34 +70,50 @@ class App
 
 
   def init_widget_monitor
-    monitor_font = TkFont.new({'family' => 'pgothic',
+    frame_outer = TkFrame.new
+    frame_inner = TkFrame.new(frame_outer)
+
+    monitor_font = TkFont.new({
+                                #'family' => 'pgothic',
+                                'family' => 'fixed',
                                 'weight' => 'bold',
                                 'slant' => 'roman',
                                 'underline' => false,
                                 'overstrike' => false,
-                                "size" => 12
+                                "size" => 10
                               })
 
-    @lbl_title = TkLabel.new {
+    @lbl_title = TkLabel.new(frame_inner) {
       bg("#88ff00")
       text "title"
       font monitor_font
     }
-    @lbl_by = TkLabel.new {
+    @lbl_by = TkLabel.new(frame_inner) {
       bg("#88ff00")
       text "by"
       font monitor_font
     }
 
-    @lbl_time = TkLabel.new{      text("--:--:--")
+    @lbl_time = TkLabel.new(frame_inner){      text("--:--:--")
       bg("#88ff00")
       pady 6 ; padx 16
       font monitor_font
     }
 
+    if $ImageManipulate
+      @lbl_cover = TkLabel.new(frame_outer){
+        image TkPhotoImage.new("file" => "__000.jpg")
+      }
+    end
+
     @lbl_title.pack(:fill => :both, :expand => true)
     @lbl_by.pack(:fill => :both, :expand => true)
     @lbl_time.pack(:fill => :both, :expand => true)
+
+    @lbl_cover.pack(:side => :left) if $ImageManipulate
+    frame_inner.pack(:fill => :both, :expand => true)
+
+    frame_outer.pack(:fill => :both, :expand => true)
   end
 
 
@@ -131,7 +148,9 @@ class App
   def init_widget_info
     @text_info = TkText.new{
       height 12
-      font TkFont.new({ :family => 'gothic',
+      font TkFont.new({ 
+                        #:family => 'gothic',
+                        :family => 'fixed',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
@@ -150,7 +169,9 @@ class App
     bar_pl = TkScrollbar.new(frame_pl)
     @lbox_playlist = TkListbox.new(frame_pl) {|f|
       selectmode 'extended'
-      font TkFont.new({ :family => 'gothic',
+      font TkFont.new({ 
+                        #:family => 'gothic',
+                        :family => 'fixed',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
@@ -246,7 +267,12 @@ class App
 
 
   ################################################################
-  
+
+
+  def update_cover
+    ;
+  end
+
 
   def update_listbox
     puts "update_listbox #{$pl.size}"

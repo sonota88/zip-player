@@ -1,10 +1,10 @@
-#!/usr/bin/ruby -Ku
+#!/usr/bin/ruby
 
 require "observer"
 
 require "anbt-mplayer-ctl"
 require "archive-utils"
-require "#{$app_home}/album-info"
+require "album-info"
 
 $web_browser = "firefox"
 $PLAYING_ITEM_BGCOLOR = "#cccccc"
@@ -20,7 +20,7 @@ class Control
   
   def initialize(parent)
     @parent = parent
-    @player = MPlayer.new(" -nolirc ")
+    @player = MPlayer.new(" -nolirc -ao alsa ")
 
     watcher_thread()
   end
@@ -86,6 +86,29 @@ class Control
   end
 
 
+  def prepare_cover_img(tr, arc_path)
+    #$VERBOSE = true
+
+    temp_img_path = "__000.jpg"
+    if File.exist? temp_img_path
+      FileUtils.rm(temp_img_path)
+    end
+
+    arc_root = arc_root_dir(arc_path)
+    if not arc_root
+      return nil
+    end
+    
+    work_img = "__111.img"
+    arc_cp(arc_path, "#{arc_root}/cover.jpg", work_img)
+    ## look for cover.png if cannnot find jpg
+    system %Q! convert "#{work_img}" -resize 128x128 "#{temp_img_path}" !
+    FileUtils.rm work_img
+
+    cmd = ""
+  end
+
+
   def prepare_track
     $stderr.puts "prepare_track"
     tr = $pl.current_track
@@ -117,7 +140,8 @@ class Control
       return :skip
     end
     
-    #pp "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$", tr
+    prepare_cover_img(tr, arc_path)
+
     tr
   end
 
@@ -134,6 +158,9 @@ class Control
     # @local_path = tr.local_path()
     
     changed ; notify_observers(:listbox)
+
+    @parent.update_cover()
+
     puts "play", file_list
     
     refresh_info()
