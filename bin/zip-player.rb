@@ -5,23 +5,21 @@
 require "rubygems"
 require "pp"
 
+$temp_dir = nil
+
 def init
   $temp_dir = "temp"
   $app_home = nil
 
   if File.symlink?($0)
     origin = File.readlink $0
-    $app_home = File.join(File.dirname(origin), "..")
+    $app_home = File.join( File.dirname(origin), "..")
   else
-    $app_home = File.dirname( File.expand_path( $0 ), ".." )
+    $app_home = File.join( File.dirname($0), ".." )
   end
-  $temp_audio_dir = File.join($app_home, "audio_temp")
-
-  if not File.exist? $temp_audio_dir
-    Dir.mkdir $temp_audio_dir
-  end
-
   $LOAD_PATH << $app_home
+
+  $temp_dir = File.join($app_home, "temp")
 
   if not File.exist? $temp_dir
     Dir.mkdir $temp_dir
@@ -33,13 +31,14 @@ end
 
 ################################################################
 
-#$pl = PlayList.new($app)
+
+# $pl = PlayList.new($app)
+
+
 init()
+# pp $app_home, $temp_dir, $LOAD_PATH ; exit
 
-$LOAD_PATH << File.join( File.dirname(__FILE__), "..", "lib" )
-
-
-require "lib/app"
+require "lib/gui-tk"
 require "lib/playlist"
 
 $pl = PlayList.new($app)

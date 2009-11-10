@@ -5,9 +5,12 @@ require "observer"
 require "anbt-mplayer-ctl"
 require "archive-utils"
 require "album-info"
+require "mini_magick"
 
 $web_browser = "firefox"
-$PLAYING_ITEM_BGCOLOR = "#cccccc"
+$COVER_SIZE = "128x128"
+$TEMP_AUDIO_BASENAME = "temp-audio"
+$TEMP_IMAGE_BASENAME = "temp-image"
 
 Thread.abort_on_exception = true
 
@@ -87,25 +90,32 @@ class Control
 
 
   def prepare_cover_img(tr, arc_path)
-    #$VERBOSE = true
+    # $VERBOSE = true
 
-    temp_img_path = "__000.jpg"
+    temp_img_path = File.join( $temp_dir, "#{$TEMP_IMAGE_BASENAME}.jpg" )
     if File.exist? temp_img_path
       FileUtils.rm(temp_img_path)
     end
 
     arc_root = arc_root_dir(arc_path)
-    if not arc_root
-      return nil
-    end
-    
-    work_img = "__111.img"
-    arc_cp(arc_path, "#{arc_root}/cover.jpg", work_img)
-    ## look for cover.png if cannnot find jpg
-    system %Q! convert "#{work_img}" -resize 128x128 "#{temp_img_path}" !
-    FileUtils.rm work_img
 
-    cmd = ""
+    entry = ["cover.jpg",
+             "cover.png",
+             "#{arc_root}/cover.jpg",
+             "#{arc_root}/cover.png"
+            ].find{ |e|
+      entry_exist?(arc_path, e)
+    }
+
+    cp_result = arc_cp(arc_path, entry, temp_img_path)
+
+    if entry && cp_result
+      [temp_img_path].each{|img|
+        MiniMagick::Image.new(img).resize $COVER_SIZE
+      }
+    else
+      nil
+    end
   end
 
 
@@ -113,7 +123,7 @@ class Control
     $stderr.puts "prepare_track"
     tr = $pl.current_track
     
-    @local_path = File.join($temp_audio_dir, tr.local_path() )
+    @local_path = File.join($temp_dir, tr.local_path() )
     p "@local_path = #{@local_path}"
     
     $stderr.puts "prepare_track #{tr.is_archive?}"
@@ -139,7 +149,7 @@ class Control
       # tr.file_exist_flag = false
       return :skip
     end
-    
+
     prepare_cover_img(tr, arc_path)
 
     tr
@@ -339,12 +349,12 @@ class Control
 
 
   def delete_temp_audio
-    Dir.open($temp_audio_dir).each {|path|
+    Dir.open($temp_dir).each {|path|
       next if path == "."
       next if path == ".."
       print "deleting: "
-      puts File.join( $temp_audio_dir, path)
-      File.delete File.join( $temp_audio_dir, path)
+      puts File.join( $temp_dir, path)
+      File.delete File.join( $temp_dir, path)
     }
   end
 

@@ -103,6 +103,11 @@ def file_list_zip(arc_path)
 end
 
 
+def entry_exist?(arc_path, entry)
+  file_list_zip(arc_path).include? entry
+end
+
+
 def get_tracks_zip(target)
   Zip::Archive.open($filename) do |ar|
     n = ar.num_files # number of entries
@@ -144,14 +149,14 @@ end
 
 
 def arc_cp(arc_path, entry, dest_path)
-  $stderr.puts "arc_path: #{arc_path}" # if $DEBUG
+  $stderr.puts "arc_path: #{arc_path} / dest_path: #{dest_path}" if $DEBUG
   temp_path = nil
 
   raise "could not find #{arc_path}" if not File.exist?(arc_path)
 
   Zip::Archive.open( arc_path ) do |ar|
     ar.each do |zf|
-      warn "^^ #{zf.name} ^^^^^^^^^^^^^^^^^^^^^^^"
+      # warn "^^ #{zf.name} ^^^^^^^^^^^^^^^^^^^^^^^"
       next if zf.name != entry
       # puts zf.name
 
@@ -166,7 +171,7 @@ def arc_cp(arc_path, entry, dest_path)
         else
           temp_path = dest_path
         end
-        warn "temp_path = #{temp_path}"
+        #warn "temp_path = #{temp_path}"
         open( temp_path, 'wb') do |f|
           f << zf.read
         end

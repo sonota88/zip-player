@@ -10,13 +10,18 @@ require "lib/control"
 require "lib/album-info"
 
 
-$temp_dir = "temp"
 $web_browser = "firefox"
 $PLAYING_ITEM_BGCOLOR = "#cccccc"
 
 $ImageManipulate = false
+begin
+  require "tkextlib/tkimg"
+  require "mini_magick"
+  $ImageManipulate = true
+rescue => e
+  $stderr.puts e.message
+end
 
-require "tkextlib/tkimg" if $ImageManipulate
 
 Thread.abort_on_exception = true
 
@@ -101,9 +106,7 @@ class App
     }
 
     if $ImageManipulate
-      @lbl_cover = TkLabel.new(frame_outer){
-        image TkPhotoImage.new("file" => "__000.jpg")
-      }
+      @lbl_cover = TkLabel.new(frame_outer)
     end
 
     @lbl_title.pack(:fill => :both, :expand => true)
@@ -178,7 +181,7 @@ class App
                         :overstrike => false,
                         :size => 10
                       })
-      height 20
+      height 12
       yscrollbar bar_pl
     }
     # 左ボタンダブルクリック
@@ -270,7 +273,11 @@ class App
 
 
   def update_cover
-    ;
+    @lbl_cover.image = if File.exist? "#{$temp_dir}/#{$TEMP_IMAGE_BASENAME}.jpg"
+                         TkPhotoImage.new("file" => "#{$temp_dir}/#{$TEMP_IMAGE_BASENAME}.jpg")
+                       else
+                         TkPhotoImage.new("file" => "#{$app_home}/share/no-cover.png")
+                       end
   end
 
 
@@ -287,7 +294,7 @@ class App
       # append item
       @lbox_playlist.insert(
                             :end,
-                            sprintf("%4s:% 3d #{tr.title}",
+                            sprintf("%4s:% 3s #{tr.title}",
                                     n+1,
                                     tr.track_number
                                     )
