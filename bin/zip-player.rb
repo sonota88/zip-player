@@ -29,6 +29,18 @@ def init
 end
 
 
+def append_album(pl, album_path, temp_dir)
+  case album_path
+  when /\.zip$/i
+    append_archive_file(pl, album_path, temp_dir)
+  when /\.flac$/i
+    append_flac(pl, album_path, temp_dir)
+  else
+    $stderr.puts "File type not recognizable."
+    exit
+  end
+end
+
 ################################################################
 
 
@@ -42,7 +54,8 @@ require "lib/gui-tk"
 require "lib/playlist"
 
 $pl = PlayList.new($app)
-append_archive_file($pl, $arc_file, $temp_dir)
+append_album($pl, $arc_file, $temp_dir)
+#pp $pl ; exit
 
 $app = App.new
 $app.init_observer

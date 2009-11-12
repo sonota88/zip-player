@@ -97,24 +97,33 @@ class Control
       FileUtils.rm(temp_img_path)
     end
 
-    arc_root = arc_root_dir(arc_path)
+    cp_result = false
+    case File.extname(arc_path)
+    when /\.zip$/
+      arc_root = arc_root_dir(arc_path)
 
-    entry = ["cover.jpg",
-             "cover.png",
-             "#{arc_root}/cover.jpg",
-             "#{arc_root}/cover.png"
-            ].find{ |e|
-      entry_exist?(arc_path, e)
-    }
+      entry = ["cover.jpg",
+               "cover.png",
+               "#{arc_root}/cover.jpg",
+               "#{arc_root}/cover.png"
+              ].find{ |e|
+        entry_exist?(arc_path, e)
+      }
 
-    cp_result = arc_cp(arc_path, entry, temp_img_path)
+      cp_result = arc_cp(arc_path, entry, temp_img_path)
+      cp_result = entry && cp_result
 
-    if entry && cp_result
+    when /\.flac$/i
+      cmd = %Q! metaflac --export-picture-to="#{temp_img_path}" #{arc_path} !
+      system cmd
+      
+      cp_result = File.exist? temp_img_path
+    end
+
+    if cp_result
       [temp_img_path].each{|img|
         MiniMagick::Image.new(img).resize $COVER_SIZE
       }
-    else
-      nil
     end
   end
 
@@ -140,7 +149,11 @@ class Control
       rescue => e
         $stderr.puts e.message, e.backtrace
       end
+    else
+      @local_path = tr.local_path
+      arc_path = tr.local_path
     end
+    p "@local_path = #{@local_path}"
 
     if not File.exist?(@local_path)
       $stderr.puts "! could not find: #{@local_path}"

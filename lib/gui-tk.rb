@@ -6,6 +6,7 @@ require "observer"
 
 require "lib/anbt-mplayer-ctl"
 require "lib/archive-utils"
+require "lib/flac"
 require "lib/control"
 require "lib/album-info"
 

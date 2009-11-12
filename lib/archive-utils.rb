@@ -13,6 +13,7 @@ require "channel"
 require "zipruby"
 require "vorbis_comment"
 require "id3lib"
+require "flacinfo"
 
 
 # $DIR_CACHE_SUB = "cache_sub"
@@ -373,6 +374,16 @@ def arc_get_tracks(arc_path, template, dir_temp)
       count += 1
     end
     $stderr.print "\n"
+  when /^\.flac$/i
+    temp_cuesheet = "__000.cue"
+    system  %Q! metaflac --export-cuesheet-to="#{temp_cuesheet}"  "#{arc_path}" !
+    text = File.read temp_cuesheet
+    result = parse_flac_cuesheet(text, template)
+    #pp result ; exit
+
+    $stderr.print "\n"
+  else
+    raise "File type not recongnized: #{arc_path} ."
   end
   #puts result.to_yaml
 
@@ -381,9 +392,13 @@ end
 
 
 def append_to_playlist(playlist, tr)
-  if not playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash )
+  # pp 6666699999, [].include?( tr.to_ezhash),
+  # playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash ),
+  # playlist.map{|e| e.to_ezhash}
+  
+  #if not playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash )
     playlist << tr
-  end
+  #end
 end
 
 
@@ -391,11 +406,8 @@ def append_archive_file(playlist,
                         arc_path, # basename
                         temp_dir
                         )
-  $stderr.puts "Archive: #{arc_path}"
+  warn "Archive: #{arc_path}"
   
-  # 実行ルートからのパス
-  #local_path = File.join( $PREFS.DIR_CACHE_SUB, arc_path )
-  #list = file_list_zip(local_path)
   list = file_list_zip(arc_path)
 
   # info 取得
@@ -403,19 +415,14 @@ def append_archive_file(playlist,
   list.each {|entry|
     if /info.yaml$/ =~ entry
       puts "info.yaml exist."
-#      temp = read_file(local_path, entry)
       temp = read_file(arc_path, entry)
-      #puts temp
-      #sleep 3
       info = YAML.load( temp )
       pp info if $DEBUG
     end
   }
 
   if $DEBUG
-    $stderr.puts "BBBBBBBBBBBB"
     pp info
-    $stderr.puts "<<BBBBBBBBBBBB"
   end
 
   # テンプレートtrack作成
@@ -433,12 +440,7 @@ def append_archive_file(playlist,
                                info['album_id']
                              end
     end
-    $stderr.puts ">> album info template"
     pp template
-    $stderr.puts "<< album info template"
-
-    $stderr.puts "<<<<BBBBBBBBBBBB" if $DEBUG
-    $stderr.puts "<<<<BBBBBBBBBBBB" if $DEBUG
 
     template.release_url = info["release_url"] if info["release_url"]
 

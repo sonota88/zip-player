@@ -124,7 +124,7 @@ class Track
 
 
   def track_number
-    case @track_number
+    case @track_number.to_s
     when /\A(\d+)\/(\d+)\z/
       return $1.to_i
     when /\d+/
@@ -164,7 +164,9 @@ class Track
   end
   
   def license_abbr
-    if @licenses == nil || @licenses == [nil]
+    if @licenses == nil ||
+        @licenses == [nil] ||
+        @licenses.first["verify_at"] == nil
       return nil
     end
 
@@ -273,6 +275,7 @@ class Track
     end
   end
 
+  
   def local_path
     if self.is_archive?
       arc_file, entry = self.arc_file_entry()
@@ -283,15 +286,7 @@ class Track
       #"#{$PREFS.DIR_ARC_TEMP}/#{filenm}"
       "#{filenm}"
     else
-      if File.exist?("#{$PREFS.DIR_CACHE_PODCAST}/#{self.filename()}")
-        #"#{$PREFS.DIR_CACHE_PODCAST}/#{self.filename()}"
-      elsif File.exist?("#{$PREFS.DIR_CACHE_SUB}/#{self.filename()}")
-        #"#{$PREFS.DIR_CACHE_SUB}/#{self.filename()}"
-      else
-        #raise "could not find #{self.filename()}"
-        @file_exist_flag = false
-        false
-      end
+      @path
     end
   end
 
@@ -349,6 +344,10 @@ class Track
 end ## Track
 
 
+# part of an album or multiple tracks
+class PartialTrack < Track
+  attr_accessor :start_time, :end_time
+end
 
 
 def make_sample_yaml
