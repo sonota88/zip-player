@@ -9,14 +9,6 @@ require "anbt-ccl-util"
 
 TEMP_DIR = "temp"
 
-# class Caster
-#   attr_accessor :name, :url
-
-#   def initialize(name=nil, url=nil)
-#     @name = name if name
-#     @url = url if url
-#   end
-# end
 
 class Channel
   # essential
@@ -31,20 +23,6 @@ class Channel
     @tags = []
   end
 end
-
-
-# class Artist
-#   # essential
-#   attr_accessor :name, :type, :website, :tags
-#   # artist, composer, arranger, performer, producer
-
-#   def initialize(name=nil, type=nil, website=nil, tags=nil)
-#     %w(name type website tags).each {|f|
-#       str = %Q!@#{f} = #{f} if #{f}!
-#       eval str
-#     }
-#   end
-# end
 
 
 class PlayLists
@@ -95,7 +73,7 @@ class Track
   #attr_accessor :license_url ## obsolete
 
   # not essential
-  attr_accessor :label, :date
+  attr_accessor :label, :date, :track_number
   attr_accessor :tags, :sys_tags
   attr_accessor :description
   attr_accessor :cast_from, :file_exist_flag
@@ -105,6 +83,7 @@ class Track
   attr_accessor :volume
   attr_accessor :description
   attr_accessor :fav_point
+  attr_accessor :start_sec, :end_sec
   
   def initialize
     @artists = []
@@ -120,6 +99,7 @@ class Track
     @cast_from = []
     @description = ""
     @donation_info_url = nil
+    @start_sec, @end_sec = nil, nil
   end
 
 
@@ -289,117 +269,9 @@ class Track
       @path
     end
   end
-
-  def html_snipet
-    $stderr.puts "@@@@@@@@@@ #{@licenses.inspect} @@@@"
-    result = ""
-    if @licenses 
-      $stderr.puts "@@@@ a"
-      if (@licenses - [nil]).empty?
-        $stderr.puts "@@@@ 3"
-        raise "could not find license info"
-        return
-      end  
-    else
-    $stderr.puts "@@@@ b"
-      raise "could not find license info"
-      return
-    end
-    
-    license = license_links() #.join(" ")
-    # $stderr.puts license
-    
-    
-    result = "<p>\n"
-    if @album && @album['title']
-      result += %Q!"<span class=\"track_title\">#{ @title }</span>" by #{ get_artists() }!
-      result += %Q!\n<br />from album "<a href="#{ get_first_release_url() }">#{ album_title_with_id() }</a>" !
-    else
-      result += %Q!"<a href="#{ get_first_release_url() }"><span class=\"track_title\">#{ @title }</span></a>" by #{ get_artists() }!
-    end
-    if license
-      result += "\n<br />" + license
-    end
-
-    result << "\n</p>"
-
-    if not @cast_from.empty?
-      result << "\n<p>"
-      begin
-        result += "\n"
-        result += @cast_from.map{|cf| 
-          %Q!(via <a href="#{ @cast_from.first['url'] }">#{ @cast_from.first['name'] }</a>)!
-        }.join(" &lt;- ")
-      rescue => e
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@"
-        puts e.message, e.backtrace
-        pp @cast_from
-        puts "<<@@@@@@@@@@@@@@@@@@@@@@@@"
-      end
-      result += "\n</p>"
-    end
-
-    result
-  end
 end ## Track
 
 
-# part of an album or multiple tracks
-class PartialTrack < Track
-  attr_accessor :start_time, :end_time
-end
-
-
-def make_sample_yaml
-  a = Artist.new()
-  a.name = "artist name"
-  a.type = "artist"
-  
-  t = Track.new()
-  t.title = "track title"
-  t.artist << a
-  t.path = "/foo.mp3"
-  t.license_url << "http://creativecommons.org/licenses/by-nc-nd/3.0/"
-  
-  album = TrackList.new()
-  album.list << t
-  
-  a2 = Artist.new()
-  a2.name = "artist name 2"
-  a2.type = "artist 2"
-  
-  t2 = Track.new()
-  t2.title = "track title: bar"
-  t2.artist << a2
-  t2.path = "/bar.mp3"
-  t2.license_url << "http://creativecommons.org/licenses/by/3.0/"
-  
-  ch = Channel.new()
-  ch.address = "foo@gmail.com"
-  ch.dj = "sonota"
-  ch.website = "http://twitter.com/sonota"
-  ch.base_url = "http://dl.getdropbox.com/u/217014/radio"
-  ch.list << album
-  ch.list << t2
-  
-  puts ch.to_yaml
-  #puts YAML.dump(program)
-end
-
-
 if __FILE__ == $0
-  t = Track.new
-  p t
-  p t.release_url
-  t.release_url = Array.new
-  #t.release_url << 6789
-  p t.release_url
-
-  #make_test_yaml()
-  case ARGV[0]
-  when "sample"
-    make_sample_yaml
-  when "get"
-    get_program("http://dl.getdropbox.com/u/217014/radio")
-  end
+  ;
 end

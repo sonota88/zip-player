@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 
 =begin
 
@@ -34,47 +34,46 @@
 require 'kconv'
 require 'socket'
 
-# mplayer ¤Î¤¢¤ë¾ì½ê
+# mplayer ã®ã‚ã‚‹å ´æ‰€
 $MPLAYER = "mplayer"
 
 # $MPLAYER = "/home/QtPalmtop/bin/mplayer"  # Linux Zaurus
 # $MPLAYER = "/usr/local/bin/mplayer"
 
-# mplayer ¤ËÅÏ¤¹¥ª¥×¥·¥ç¥ó
+# mplayer ã«æ¸¡ã™ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 # $MPLAYER_OPTS = "-cache 4096"
 $MPLAYER_OPTS = ""
 
 class MPlayer
-
   attr_reader :status, :length, :length_sec, :volume
 
-	# ¾õÂÖÄê¿ô
-	INACTIVE  = 1
-	READY     = 2
-	PLAY      = 4
-	PAUSED    = 8
-	ABNORMAL  = 16
+  # çŠ¶æ…‹å®šæ•°
+  INACTIVE  = :inactive
+  READY     = :ready
+  PLAY      = :play
+  PAUSED    = :paused
+  ABNORMAL  = :abnormal
 
 
   def initialize( addopts = "")
-		@mplayerpath = $MPLAYER
-		@status = MPlayer::INACTIVE
-		@playlist = Array::new()
-		@playlistfile = ''
+    @mplayerpath = $MPLAYER
+    @status = MPlayer::INACTIVE
+    @playlist = Array::new()
+    @playlistfile = ''
 
-		@addopts = addopts
-		@playfile = ''
-		@type = 'unknown'
-		@bitrate = 'unknown'
-		@title = 'unknown'
-		@artist = 'unknown'
-		@album = 'unknown'
-		@channel = 'unknown'
-		
-		@time_str = nil
-		@length = nil
-		@volume = 80
-		
+    @addopts = addopts
+    @playfile = ''
+    @type = 'unknown'
+    @bitrate = 'unknown'
+    @title = 'unknown'
+    @artist = 'unknown'
+    @album = 'unknown'
+    @channel = 'unknown'
+    
+    @time_str = nil
+    @length = nil
+    @volume = 80
+    
 #     @th_watch = Thread.new{
 #       loop{
 #         if @status == PLAY
@@ -87,7 +86,8 @@ class MPlayer
 #         end
 #       }
 #     }
-	end
+  end
+
 
   def load_playlist( playlist)
 
@@ -97,11 +97,12 @@ class MPlayer
     #@playlistfile = @playlist.join(" ")
     @playlistfile = @playlist.map{|file| %Q!"#{file}"! }.join(" ")
 
-    # ºÆÀ¸»ş´Ö¼èÆÀ¤Î¤¿¤á -slave ¤Ï³°¤¹
+    # å†ç”Ÿæ™‚é–“å–å¾—ã®ãŸã‚ -slave ã¯å¤–ã™
     # @mplayeropts = "-quiet -slave " + @addopts + " " + $MPLAYER_OPTS
     @mplayeropts = " -slave " + @addopts + " " + $MPLAYER_OPTS
     
   end
+
 
   def play
     if @status == READY
@@ -175,9 +176,9 @@ class MPlayer
   end
 
 
-  def playlist( step)
+  def playlist(step)
     if @status == PLAY || @status == PAUSED
-      #@playfile = ''
+      # @playfile = ''
       str = "pt_step #{step}\n"
       @send.write(str)
       return true
@@ -186,15 +187,19 @@ class MPlayer
     end
   end
 
+
   def playlist_next
     playlist(1)
   end
+
   
   def playlist_prev
     playlist(-1)
   end
   
-  def seek( step)
+
+  # rename such as "seek_sec_diff"
+  def seek(step)
     if @status == PLAY || @status == PAUSED
       str = "seek #{step} type=0\n"
       @send.write(str)
@@ -205,12 +210,14 @@ class MPlayer
   end
 
 
+  # seek to arg:percent position *from beginning*.
+  # not current position + arg:percent.
   def seek_percent(percent)
     if @status == PLAY || @status == PAUSED
-      #			str = "seek %.04f type=1\n" % [ percent ]
+      # str = "seek %.04f type=1\n" % [ percent ]
       str = "seek %d 1\n" % [ percent ]
       #str = "seek 10% type=1\n"
-      puts str
+      # puts str
       @send.write(str)
       return true
     else
@@ -229,7 +236,7 @@ class MPlayer
   end
 
 
-  ## ºÆÀ¸Ä¾¸å¤Ë¸Æ¤Ğ¤ì¤ë
+  ## å†ç”Ÿç›´å¾Œã«å‘¼ã°ã‚Œã‚‹
   def start_inspector
     stop_inspector
     @polling_thread = Thread::start{
@@ -261,7 +268,8 @@ class MPlayer
         when /^A:(.+)$/
           @time_str = $&
           unless @length
-            @length = @time_str.sub(/^A:.+?\((.+?)\).+?\((.+?)\).+$/, '\2')
+            /^A:.+?\((.+?)\).+?\((.+?)\).+$/ =~ @time_str
+            @length = $2
             case @length
             when /^(.+?):(.+):(.+)\.(.+)$/
               @length_sec = $1.to_i * 60 * 60 + $2.to_i * 60 + $3.to_i + $4.to_f
@@ -290,10 +298,13 @@ class MPlayer
     }
   end
   
+
   def stop_inspector
     @polling_thread.exit if !@polling_thread.nil? && @polling_thread.alive?
   end
-	
+
+
+  # should return float
   def get_time
     if @time_str
       if /^A:(.+?)\s\(/ =~ @time_str
@@ -303,10 +314,12 @@ class MPlayer
       return nil 
     end
   end
+
   
   def set_volume(diff)
     @send.print "volume #{diff}\n"
   end
+
 
   def set_volume_abs(diff)
     @send.print "volume #{diff} 1\n"
@@ -314,7 +327,7 @@ class MPlayer
 end
 
 =begin
-# Æ°ºî¥Æ¥¹¥È
+# å‹•ä½œãƒ†ã‚¹ãƒˆ
 
 playlist = ["/home/kazuki/mp3/imaginary_affair.mp3", "/home/kazuki/mp3/namidanochikai.mp3"]
 x = MPlayer::new()
@@ -349,18 +362,17 @@ x.stop
 =end
 
 if $0 == __FILE__
-#$stderr.puts ARGV[0] ; exit
+  #$stderr.puts ARGV[0] ; exit
 
-x = MPlayer.new(" -nolirc ")
-x.load_playlist([ARGV[0]])
+  x = MPlayer.new(" -nolirc -ao alsa ")
+  x.load_playlist([ARGV[0]])
 
-x.play
-sleep 5
-x.pause
-sleep 3
-x.pause
-sleep 3
-x.stop
-sleep 3
-
+  x.play
+  sleep 5
+  x.pause
+  sleep 3
+  x.pause
+  sleep 3
+  x.stop
+  sleep 3
 end

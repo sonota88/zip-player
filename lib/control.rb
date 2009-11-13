@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+# -*- coding: utf-8 -*-
 
 require "observer"
 
@@ -42,9 +43,12 @@ class Control
           next
         end
 
-        @parent.set_label( "time", "%s / %s" % [get_time(), get_length()] )
+        @parent.set_label( "time", "%s / %s" % [sec2hhmmssxx(get_time_sec()), sec2hhmmssxx(get_length_sec())] )
+
         begin
           @percent = get_time_sec() / get_length_sec() * 100
+          #pp 66777777777777777, "time: %.2f / length: %.2f / %.2f %%" % [get_time_sec, get_length_sec, @percent]
+
           if not @parent.in_seek?
             @parent.set_seekbar_percent(@percent)
           end
@@ -53,17 +57,21 @@ class Control
           $stderr.puts e.message
         end
         
+        # should separate to method such as "over_length()"
+        over_end = begin  ; get_time_sec() > get_length_sec()
+                   rescue ; false
+                   end
+        #pp "@@@@@@@@@ over_end?: #{get_time_sec} > #{get_length_sec} =>  #{over_end} / player_status: #{player_status}"
+        #exit if over_end
 
-        if player_status == MPlayer::READY && @play_next
+        if (player_status == MPlayer::READY && @play_next) ||
+            (player_status == MPlayer::ABNORMAL && @play_next) ||
+            over_end
           move(1)
           play()
         end
 
-        if player_status == MPlayer::ABNORMAL && @play_next
-          move(1)
-          play()
-        end
-
+        #sleep 1
         sleep 0.05
       }
     }
@@ -135,7 +143,7 @@ class Control
     @local_path = File.join($temp_dir, tr.local_path() )
     p "@local_path = #{@local_path}"
     
-    $stderr.puts "prepare_track #{tr.is_archive?}"
+    $stderr.puts "archive? = #{tr.is_archive?}"
     if tr.is_archive?
       arc_file, entry = tr.arc_file_entry()
       p "arc_file, entry = #{arc_file} / #{entry}"
@@ -189,8 +197,15 @@ class Control
     refresh_info()
 
     @play_next = true
-    @player.load_playlist( [ @local_path ] )
+    @player.load_playlist( [ @local_path ])
     @player.play()
+
+    begin
+      @player.seek( tr.start_sec )
+    rescue
+      ;
+    end
+
 
     begin
       if tr.volume
@@ -211,9 +226,7 @@ class Control
     if $pl.current_index <= 0
       $pl.current_index = 0
     elsif $pl.current_index >= $pl.size
-      # $pls.current_index = $pls.list.size-1
       $pl.current_index = 0
-      #randomize_playlist()
       @play_next = false
     end
     
@@ -224,7 +237,6 @@ class Control
   def move_to(target)
     puts "move to: #{$pl.current_index+1} => #{target+1} / #{$pl.size}"
     $pl.current_index = target
-    puts "///////////////////////////////"
     puts $pl.current_track.to_ezhash
     $pl.each_with_index{|t, n|
       if t.to_ezhash == $pl.current_track.to_ezhash
@@ -232,22 +244,14 @@ class Control
       end
     }
     puts $pl.current_track.to_ezhash
-    puts "<<///////////////////////////////"
-    
-    # @parent.set_label( "title", "title: #{$pl.current_track.title}")
-    # @parent.set_label( "by",    "by: #{$pl.current_track.get_artists()}")
     
     if player_status == MPlayer::PLAY
       stop()
-      puts "<<22 2 ///////////////////////////////"
       play()
-      puts "<<22 3 ///////////////////////////////"
       if $pl.current_track.volume
         @player.set_volume_abs($pl.current_track.volume)
       end
     end
-    puts "<<33///////////////////////////////"
-    # @parent.lbox_playlist.see $pl.current_index
     
     begin
       @parent.lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
@@ -265,39 +269,32 @@ class Control
   end
   
 
-  def get_length
-    begin
-      return @player.length
-    rescue => e
-      return "(length)"
-    end
-  end
-
-
   def get_length_sec
-    return @player.length_sec
-  end
-
-  
-  def get_time
-    #    return @player.get_time()
-    begin
-      sec_f = @player.get_time().to_f
-    rescue => e
-      return "time: ---- #{e.message} "
+    if @player.length_sec == nil
+      return nil
     end
-    sec_i = sec_f.to_i
-    ms = (sec_f % 1.0) * 100
-    h = sec_i / 3600
-    m = (sec_i - h * 3600) / 60
-    s = (sec_i - h * 3600 - m * 60)
-    
-    return "time: %02d:%02d:%02d.%02d" % [h, m, s, ms]
+
+    tr = $pl.current_track
+    if tr.start_sec 
+      if tr.end_sec
+        tr.end_sec - tr.start_sec      
+      else
+        @player.length_sec - tr.start_sec      
+      end
+    else
+      @player.length_sec
+    end
   end
 
 
   def get_time_sec
-    return @player.get_time().to_f
+    if @player.get_time() == nil
+      return nil
+    end
+    
+    sec_f = @player.get_time().to_f # float が帰ってくるべき
+
+    sec_f - $pl.current_track.start_sec
   end
 
 
@@ -373,7 +370,14 @@ class Control
 
 
   def seek_percent(percent)
-    @player.seek_percent percent
+    begin
+      st = $pl.current_track.start_sec
+      diff_sec_f = get_length_sec * percent.to_f / 100 - get_time_sec
+      @player.seek( "%.2f" % [diff_sec_f])
+    rescue => e
+      puts e.message, e.backtrace
+      @player.seek_percent percent
+    end
   end
 
 
