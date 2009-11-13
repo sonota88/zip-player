@@ -198,10 +198,16 @@ class MPlayer
   end
   
 
-  # rename such as "seek_sec_diff"
-  def seek(step)
+  def seek_sec(sec, rel_or_abs)
+    type = case rel_or_abs
+           when :relative ; 0
+           when :absolute ; 2
+           else
+             return false
+           end
+    
     if @status == PLAY || @status == PAUSED
-      str = "seek #{step} type=0\n"
+      str = "seek #{sec} type=#{type}\n"
       @send.write(str)
       return true
     else
@@ -210,9 +216,7 @@ class MPlayer
   end
 
 
-  # seek to arg:percent position *from beginning*.
-  # not current position + arg:percent.
-  def seek_percent(percent)
+  def seek_percent_absolute(percent)
     if @status == PLAY || @status == PAUSED
       # str = "seek %.04f type=1\n" % [ percent ]
       str = "seek %d 1\n" % [ percent ]
@@ -305,10 +309,11 @@ class MPlayer
 
 
   # should return float
-  def get_time
+  def get_time_sec
     if @time_str
       if /^A:(.+?)\s\(/ =~ @time_str
-        return $1
+        #pp "&&&&&&&&&&&& %s - %s" % [$1, $1.to_f]
+        return $1.to_f
       end
     else
       return nil 

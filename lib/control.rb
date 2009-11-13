@@ -201,9 +201,9 @@ class Control
     @player.play()
 
     begin
-      @player.seek( tr.start_sec )
-    rescue
-      ;
+      @player.seek_sec( tr.start_sec, :absolute )
+    rescue => e
+      pp e.message, e.backtrace
     end
 
 
@@ -288,12 +288,11 @@ class Control
 
 
   def get_time_sec
-    if @player.get_time() == nil
+    sec_f = @player.get_time_sec()
+    if sec_f == nil
       return nil
     end
     
-    sec_f = @player.get_time().to_f # float が帰ってくるべき
-
     sec_f - $pl.current_track.start_sec
   end
 
@@ -369,14 +368,14 @@ class Control
   end
 
 
-  def seek_percent(percent)
+  def seek_percent_absolute(percent)
     begin
       st = $pl.current_track.start_sec
       diff_sec_f = get_length_sec * percent.to_f / 100 - get_time_sec
-      @player.seek( "%.2f" % [diff_sec_f])
+      @player.seek_sec( "%.2f" % [diff_sec_f], :relative)
     rescue => e
       puts e.message, e.backtrace
-      @player.seek_percent percent
+      @player.seek_percent_absolute percent
     end
   end
 

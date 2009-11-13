@@ -103,14 +103,24 @@ end
 
 
 if $0 == __FILE__
-  pp sec2mmssxx(0)
-  pp sec2mmssxx(0.548654152)
-  pp sec2mmssxx(5)
-  pp sec2mmssxx(59.5864)
-  pp sec2mmssxx(60.5864)
-  pp sec2mmssxx(3599.5864)
-  pp sec2mmssxx(3600.5864)
-  pp sec2mmssxx(5999.5864)
+  pp sec2hhmmssxx(0)
+  pp sec2hhmmssxx(0.548654152)
+  pp sec2hhmmssxx(5)
+  pp sec2hhmmssxx(59.5864)
+  pp sec2hhmmssxx(60.5864)
+  pp sec2hhmmssxx(3599.5864)
+  pp sec2hhmmssxx(3600.5864)
+  pp sec2hhmmssxx(5999.5864)
+
+
+  # pp sec2mmssxx(0)
+  # pp sec2mmssxx(0.548654152)
+  # pp sec2mmssxx(5)
+  # pp sec2mmssxx(59.5864)
+  # pp sec2mmssxx(60.5864)
+  # pp sec2mmssxx(3599.5864)
+  # pp sec2mmssxx(3600.5864)
+  # pp sec2mmssxx(5999.5864)
   exit
 
 end

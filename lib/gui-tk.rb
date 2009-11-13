@@ -141,7 +141,7 @@ class App
     @seekbar.bind "ButtonRelease-1", proc { 
       diff = @seekbar.value - @control.percent
       puts "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
-      @control.seek_percent(@seekbar.value)
+      @control.seek_percent_absolute(@seekbar.value)
       @seekbar_pressed = false
     }
 
