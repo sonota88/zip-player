@@ -200,12 +200,7 @@ class Control
     @player.load_playlist( [ @local_path ])
     @player.play()
 
-    begin
-      @player.seek_sec( tr.start_sec, :absolute )
-    rescue => e
-      pp e.message, e.backtrace
-    end
-
+    @player.seek_sec(tr.start_sec, :absolute)
 
     begin
       if tr.volume
@@ -369,14 +364,8 @@ class Control
 
 
   def seek_percent_absolute(percent)
-    begin
-      st = $pl.current_track.start_sec
-      diff_sec_f = get_length_sec * percent.to_f / 100 - get_time_sec
-      @player.seek_sec( "%.2f" % [diff_sec_f], :relative)
-    rescue => e
-      puts e.message, e.backtrace
-      @player.seek_percent_absolute percent
-    end
+    diff_sec_f = get_length_sec * (percent.to_f / 100) - get_time_sec # to - from
+    @player.seek_sec( diff_sec_f, :relative)
   end
 
 
