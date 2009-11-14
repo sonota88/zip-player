@@ -375,13 +375,10 @@ def arc_get_tracks(arc_path, template, dir_temp)
     end
     $stderr.print "\n"
   when /^\.flac$/i
-    temp_cuesheet = File.join($temp_dir, "__000.cue")
+    temp_cuesheet_path = File.join($temp_dir, "__000.cue")
+    system %Q! metaflac --export-cuesheet-to="#{temp_cuesheet_path}" "#{arc_path}" !
+    text = File.read(temp_cuesheet_path)
 
-    # cmd = %Q! metaflac --export-cuesheet-to="#{temp_cuesheet}"  "#{arc_path}" !
-    # system cmd
-    # text = File.read temp_cuesheet
-
-    text = ` metaflac --show-tag=RAW_CUESHEET "#{arc_path}" `
     result = parse_flac_cuesheet(text, template)
 
     $stderr.print "\n"

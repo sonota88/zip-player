@@ -5,6 +5,7 @@ require "pp"
 
 require "rubygems"
 require "flacinfo"
+require "cuesheet"
 
 class FlacInfo
   def tag(tagname)
@@ -27,26 +28,23 @@ def append_flac(playlist, flac_path, temp_dir)
   fi = FlacInfo.new flac_path
   #pp fi.comment, fi.tag("ARTIST") ; exit
 
-  # cuesheet_text = fi.tag("RAW_CUESHEET")
-  cuesheet_text = `metaflac --show-tag="RAW_CUESHEET" #{flac_path}`
-  # pp cuesheet_text
-
-  require "cuesheet"
+  temp_cue_file = File.join( $temp_dir, "__000.cue" )
+  system %Q! metaflac --export-cuesheet-to="#{temp_cue_file}" "#{flac_path}" !
+  cuesheet_text = File.read(temp_cue_file)
   cuesheet = CueSheet.new.parse(cuesheet_text)
 
   # make template track from album info
   template = Track.new
   template.album['title'] = fi.tag("TITLE") #"__ttttttt"
   template.album['id'] = "__id"
-  # pp template
 
   template.release_url = "http://..."
   template.licenses << {"url" => nil, "verify_at" => nil}
-#  template.artists = {"name" => "__aa"}
   template.artists << {"name" => fi.tag("ARTIST").join(" / ")}
   template.path = flac_path
   
   tracks = flac_get_tracks(flac_path, template, temp_dir)
+
   tracks.each{|t|
     temp = cuesheet.select{ |c|
       c[:track_number] == t.track_number
@@ -59,14 +57,10 @@ def append_flac(playlist, flac_path, temp_dir)
                        0
                      end
   }
-  # pp tracks
 
-  #pp playlist.map{|t|t.to_ezhash}, 66666666666 ; exit
   tracks.sort_by{|tr| tr.track_number }.each{ |track|
-    #pp track, 777777777777
     append_to_playlist(playlist, track)
   }
-  #exit
 end
 
 
@@ -80,8 +74,6 @@ def parse_flac_cuesheet(text, template)
   buf = {:index => nil, :start_sec => nil, :end_sec => nil}
   
   text.each_line{|line|
-    # pp line
-    
     case line
     when /^  TRACK (\d\d) AUDIO/
       temp_tracks == nil ? temp_tracks = [] : temp_tracks << buf
@@ -101,10 +93,9 @@ def parse_flac_cuesheet(text, template)
     temp = template.dup
     
     temp.track_number = t[:index].to_i
-    temp.title = "%s (#%s)" % [temp.album["title"], temp.track_number]
+    temp.title = "%s (track-%s)" % [temp.album["title"], temp.track_number]
     temp.start_sec = t[:start_sec]
     temp.end_sec = t[:end_sec]
-    #pp temp
 
     temp
   }
@@ -115,10 +106,7 @@ def parse_flac_cuesheet(text, template)
     each{ |t|
     t.end_sec = pre_end_sec
     pre_end_sec = t.start_sec
-
-    #pp t
   }
-  #exit
 
   temp_tracks
 end
