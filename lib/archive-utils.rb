@@ -224,6 +224,7 @@ def arc_add_overwrite(arc_path, path, entry)
   FileUtils.rm temp_path
 end
 
+
 def read_metadata(path, local_path)
   ext = File.extname(path)
 
@@ -340,7 +341,7 @@ def arc_get_tracks(arc_path, template, dir_temp)
   $stderr.puts "++++++++++ #{arc_path}" if $VERBOSE
   #local_path = File.join( $PREFS.DIR_CACHE_SUB, arc_path )
 
-  result = []
+  tracks = []
   case File.extname(arc_path)
   when /^\.zip$/i
     #list = file_list_zip(local_path)
@@ -361,7 +362,7 @@ def arc_get_tracks(arc_path, template, dir_temp)
       
       ## タグ読む
       begin
-        result << audio2track(temp_audio_path, dir_temp, template, entry)
+        tracks << audio2track(temp_audio_path, dir_temp, template, entry)
       rescue => e
         puts e.message, e.backtrace
         puts temp_audio_path, entry, arc_path
@@ -379,7 +380,7 @@ def arc_get_tracks(arc_path, template, dir_temp)
     system %Q! metaflac --export-cuesheet-to="#{temp_cuesheet_path}" "#{arc_path}" !
     text = File.read(temp_cuesheet_path)
 
-    result = parse_flac_cuesheet(text, template)
+    tracks = parse_flac_cuesheet(text, template)
 
     $stderr.print "\n"
   else
@@ -387,7 +388,7 @@ def arc_get_tracks(arc_path, template, dir_temp)
   end
   #puts result.to_yaml
 
-  return result
+  return tracks
 end
 
 
@@ -408,11 +409,11 @@ def append_archive_file(playlist,
                         )
   warn "Archive: #{arc_path}"
   
-  list = file_list_zip(arc_path)
+  entries = file_list_zip(arc_path)
 
   # info 取得
   info = nil
-  list.each {|entry|
+  entries.each {|entry|
     if /info.yaml$/ =~ entry
       puts "info.yaml exist."
       temp = read_file(arc_path, entry)

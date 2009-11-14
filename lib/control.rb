@@ -95,8 +95,8 @@ class Control
     info << tr.ya2yaml
     @parent.set_text("info", info)
   end
-
-
+  
+  
   def prepare_cover_img(tr, arc_path)
     # $VERBOSE = true
 
@@ -150,7 +150,6 @@ class Control
       #arc_path = File.join( $PREFS.DIR_CACHE_SUB, arc_file)
       arc_path = arc_file
       begin
-#        arc_cp( arc_path, entry, @local_path )
         if not File.exist? @local_path
           arc_cp(arc_path, entry, @local_path)
         end
@@ -288,7 +287,11 @@ class Control
       return nil
     end
     
-    sec_f - $pl.current_track.start_sec
+    if $pl.current_track.start_sec
+      sec_f - $pl.current_track.start_sec
+    else
+      sec_f
+    end
   end
 
 
