@@ -259,7 +259,7 @@ class Control
 
   def seek(sec)
     puts "seek(#{sec})"
-    @player.seek(sec)
+    @player.seek_sec(sec, :relative)
   end
   
 
