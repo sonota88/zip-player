@@ -375,14 +375,6 @@ def arc_get_tracks(arc_path, template, dir_temp)
       count += 1
     end
     $stderr.print "\n"
-  when /^\.flac$/i
-    temp_cuesheet_path = File.join($temp_dir, "__000.cue")
-    system %Q! metaflac --export-cuesheet-to="#{temp_cuesheet_path}" "#{arc_path}" !
-    text = File.read(temp_cuesheet_path)
-
-    tracks = parse_flac_cuesheet(text, template)
-
-    $stderr.print "\n"
   else
     raise "File type not recongnized: #{arc_path} ."
   end

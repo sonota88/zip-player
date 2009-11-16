@@ -27,7 +27,7 @@ class CueSheet
         temp = {}
         #temp[:index] = []
         
-        temp[:track_number] = $1.to_i
+        temp[:index] = $1.to_i
       when /    TITLE "(.+)"/
         temp[:title] = $1
       when /    PERFORMER "(.+)"/
@@ -36,7 +36,6 @@ class CueSheet
         #puts $1.to_i, $2
         temp[:start_sec] = $2
       end
-
 
       lines.delete_at(0)
       break if lines.empty?
@@ -71,6 +70,8 @@ class CueSheet
     end
 
     parse_tracks(lines)
+
+    { :album => @album, :tracks => @tracks }
   end
 
   def each_track
