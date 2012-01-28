@@ -49,6 +49,12 @@ def flac_tracks(flac_path, template)
   cs = CueSheet.new
   cuesheet = cs.parse(cuesheet_text)
 
+  if cuesheet_text.empty?
+    STDERR.puts %Q!No cuesheet in FLAC.!
+    STDERR.puts %Q!To set cuesheet: metaflac --set-tag="RAW_CUESHEET=`cat foo.cue`" foo.flac!
+    exit
+  end
+
   pre_end_sec = nil
   tracks = cuesheet[:tracks].
     sort{ |a,b| b[:index] <=> a[:index] }.
@@ -82,4 +88,42 @@ def flac_tracks(flac_path, template)
   }
 
   tracks
+end
+
+
+class Anbt
+  class Flac
+    def self.readtag(path, tag)
+      cmd = %Q! metaflac --show-tag=#{tag} "#{path}" !
+      result = `#{cmd}`.split("\n")
+      result = result.map{|x| x.sub(/^#{tag}=(.+)$/i, '\1') }
+      result
+    end
+
+    
+    def self.metadata(path)
+      title       = nil
+      artist      = nil ## not ARTIST*S*
+      album       = nil
+      tracknumber = nil
+      comment     = nil
+      
+      %w(
+        title artist album tracknumber comment
+      ).each{|tag|
+        eval %Q{ #{tag} = readtag(path, "#{tag}") }
+      }
+
+      return {
+        "title"        => title[0],
+        "artists"      => artist.map{|a|
+          { "name" => a }
+        },
+        "album_title"  => album[0],
+        "license"      => {},
+        "track_number" => tracknumber[0],
+        "comment"      => comment.join("\n")
+      }
+    end
+  end
 end

@@ -22,43 +22,27 @@ class FeedInfo
   end
 end
 
-class Preferences
-  attr_accessor :CHANNEL_LIST_PATH
-  attr_accessor :DIR_CACHE_PODCAST, :DIR_CACHE_SUB, :DIR_CACHE_SUB_ARCHIVE, :DIR_TRASH
-  attr_accessor :DIR_TEMP
-  attr_accessor :DIR_ARC_TEMP
-  attr_accessor :DIR_RECAST, :DIR_RECAST_REMOTE_ROOT
-  attr_accessor :fav_play_threshold, :editor, :ext_tag_editor
-  attr_accessor :recent_tags
-  attr_accessor :podcast_limit_MB
 
-  def init
-    @CHANNEL_LIST_PATH      ||= "channel_list.txt"
-    @DIR_CACHE_PODCAST      ||= "cache_podcast"
-    @DIR_CACHE_SUB          ||= "cache_sub"         
-    @DIR_CACHE_SUB_ARCHIVE  ||= "__archive__"
-    @DIR_TRASH              ||= "trash"
-    @DIR_TEMP               ||= "temp_xxx"
-    @DIR_ARC_TEMP           ||= "temp/archive"
-    @DIR_RECAST             ||= nil
-    @DIR_RECAST_REMOTE_ROOT ||= nil
-    @fav_play_threshold     ||= -5
-    @current_pl             ||= 'default'
-    @podcast_limit_MB       ||= 10000
+class Preferences
+  attr_accessor :global_volume
+
+
+  def initialize
+    init()
   end
 
-  def save
-    open(PREF_FILE, "w") do |f| 
+
+  def init
+    @global_volume ||= 80
+  end
+
+
+  def save(pref_path)
+    File::open(pref_path, "w") do |f| 
       f.print self.to_yaml
     end
   end
-
-  def current_tag
-    @recent_tags.first
-  end
 end
-
-
 
 
 def mmssxx2sec(mmssxx)

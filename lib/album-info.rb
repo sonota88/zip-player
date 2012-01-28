@@ -1,4 +1,5 @@
 #!/usr/bin/ruby -Ku
+# -*- coding: utf-8 -*-
 
 require "rubygems"
 require "fileutils"
@@ -204,15 +205,17 @@ donation_info_url:
     info_valid = nil
     invalid_text = nil
 
-    if @arc.entry_exist? ALBUM_INFO_FILE
+    info_entry = dest_info_entry()
+
+    if @arc.entry_exist? info_entry
       info_exist = true
       # check validness
       begin
-        YAML.load( @arc.entry_read(ALBUM_INFO_FILE) )
+        YAML.load( @arc.entry_read(info_entry) )
         info_valid = true
       rescue
         info_valid = false
-        invalid_text = @arc.entry_read(ALBUM_INFO_FILE)
+        invalid_text = @arc.entry_read(info_entry)
       end
     else
       info_exist = false
@@ -224,7 +227,7 @@ donation_info_url:
     result = {}
 
     if info_valid
-      result = YAML.load( @arc.entry_read(ALBUM_INFO_FILE) )
+      result = YAML.load( @arc.entry_read(info_entry) )
     else
       result = YAML.load(AI_TEMPLATE)
 
@@ -255,6 +258,18 @@ donation_info_url:
     preedit_str << "\n"
   end
 
+  
+  def dest_info_entry
+    require "archive-utils"
+    arc_root = arc_root_dir(@arc_path)
+
+    if arc_root
+      File.join(arc_root, ALBUM_INFO_FILE)
+    else
+      ALBUM_INFO_FILE
+    end
+  end
+    
 
   def new_or_modify(overwrite = nil)
     arc_basename = File.basename(@arc_path)
@@ -273,18 +288,18 @@ donation_info_url:
 
     open(temp_infopath, "w") {|f| f.print postedit_str }
 
-    FileUtils.cp(temp_infopath, "000.yaml") if $DEBUG
-
     new_arc_basename = "#{arc_basename}#{NEW_ARC_SUFFIX}"
     FileUtils.cp(@arc_path, new_arc_basename)
     #sleep 1
     
     new_arc = ArchiveFile.new(new_arc_basename)
-    
-    if new_arc.entry_exist?(ALBUM_INFO_FILE)
-      new_arc.entry_rm(ALBUM_INFO_FILE)
+
+    info_entry = dest_info_entry()
+
+    if new_arc.entry_exist?(info_entry)
+      new_arc.entry_rm(info_entry)
     end
-    new_arc.entry_add(temp_infopath, ALBUM_INFO_FILE)
+    new_arc.entry_add(temp_infopath, info_entry)
 
     if overwrite
       #FileUtils.rm(arc_basename)

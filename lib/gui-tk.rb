@@ -4,11 +4,9 @@
 require "tk"
 require "observer"
 
-require "lib/anbt-mplayer-ctl"
-require "lib/archive-utils"
-require "lib/flac"
-require "lib/control"
-require "lib/album-info"
+require "archive-utils"
+require "flac"
+require "control"
 
 
 $web_browser = "firefox"
@@ -33,7 +31,7 @@ def init
   end
 
   $arc_file = ARGV[0]
-  append_archive_file($pl, $arc_file, $temp_dir)
+  append_tracks_from_archive($pl, $arc_file, $temp_dir)
 end
 
 
@@ -237,8 +235,13 @@ class App
 
     @btn_vol_minus = TkButton.new(frame_console) { text "vol-" }
     @btn_vol_minus.command { @control.change_vol(-5) }
-    @btn_vol_plus = TkButton.new(frame_console) { text "vol+" }
+    @btn_vol_plus = TkButton.new(frame_console) { text "+" }
     @btn_vol_plus.command  { @control.change_vol(5)  }
+    
+    @btn_vol_global_minus = TkButton.new(frame_console) { text "global vol-" }
+    @btn_vol_global_minus.command { @control.change_vol_global(-5) }
+    @btn_vol_global_plus = TkButton.new(frame_console) { text "+" }
+    @btn_vol_global_plus.command  { @control.change_vol_global(5)  }
     
     frame_console.pack
     @btn_play.pack(:side => :left)
@@ -248,6 +251,8 @@ class App
     @btn_seek_ff_div.pack(:side => :left)
     @btn_vol_minus.pack(:side => :left)
     @btn_vol_plus.pack(:side => :left)
+    @btn_vol_global_minus.pack(:side => :left)
+    @btn_vol_global_plus.pack(:side => :left)
   end
 
   
@@ -259,13 +264,19 @@ class App
     @btn_edit_albuminfo = TkButton.new(frame_misc) { text "Edit album info" }
     @btn_edit_albuminfo.command { @control.edit_albuminfo() }
 
+    @btn_set_cover = TkButton.new(frame_misc) { text "Set cover" }
+    @btn_set_cover.command {
+      path = Tk.getOpenFile
+      @control.set_cover path
+    }
+    
     @btn_quit = TkButton.new(frame_misc) { text "Quit" }
     @btn_quit.command { @control.app_exit }
 
-    
     frame_misc.pack(:side => :top)
     @btn_open_release_url.pack(:side => :left)
     @btn_edit_albuminfo.pack(:side => :left)
+    @btn_set_cover.pack(:side => :left)
     @btn_quit.pack(:side => :left)
   end
 
@@ -283,6 +294,13 @@ class App
 
 
   def update_listbox
+    begin
+      $pl.size
+    rescue
+      return
+    end
+
+
     puts "update_listbox #{$pl.size}"
     @lbox_playlist.delete(0, :end)
     
@@ -338,16 +356,18 @@ class App
 
   def set_seekbar_percent(percent)
     begin
-      @seekbar.value = percent
+      if percent
+        @seekbar.value = percent
+      end
     rescue => e
       $stderr.puts "XXXX %s / %s" % [ @control.get_time_sec(), @control.get_length_sec() ]
-      $stderr.puts e.message
+      $stderr.puts e.message, e.backtrace
     end
   end
 
-
-  def start
-    @control.play($pl)
+  
+  def start(arc_path, temp_dir)
+    @control.prepare_album(arc_path, temp_dir)
     Tk.mainloop
   end
 end

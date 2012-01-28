@@ -122,12 +122,11 @@ class MPlayer
       @child = fork {
         @send.close
         @receive.close
-        STDIN.reopen( receive)
-        STDOUT.reopen( send)
+        STDIN.reopen(receive)
+        STDOUT.reopen(send)
         
         cmdstr = "#{@mplayerpath} #{@mplayeropts} #{@playlistfile}"
         exec cmdstr
-        
       }
       
       #print "#{@mplayerpath} #{@mplayeropts} #{@playlistfile}\n"
