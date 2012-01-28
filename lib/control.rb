@@ -36,7 +36,8 @@ class Control
     @parent = parent
     # " -nolirc -ao alsa -af volume=-100 "
     # @player = MPlayer.new(" -nolirc -af volume=-100 ")
-    @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
+    # @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
+    @player = MPlayer.new(" -nolirc -ao pulse ")
 
     watcher_thread()
   end
@@ -44,6 +45,49 @@ class Control
 
   def init_observer
     self.add_observer(@parent)
+  end
+
+
+  ##
+  # METADATA_BLOCK_PICTURE を持っている Ogg Vorbis ファイルの場合
+  # true を返す。
+  # see http://d.hatena.ne.jp/sonota88/20120128/1327759784
+  def invalid_vorbis?(file)
+    return false if file.nil?
+
+    if not /\.(ogg|oga)/ =~ File.extname(file).downcase
+      return false
+    end
+
+    tempfile = "__vorbiscomment_temp.txt"
+
+    # TODO vorbiscomment の存在チェック
+
+    system %Q! vorbiscomment -c "#{tempfile}" "#{file}" !
+    comment = File.read(tempfile)
+    FileUtils.rm tempfile
+    
+    if /^METADATA_BLOCK_PICTURE=/ =~ comment
+      return true
+    end
+
+    false
+  end
+
+  
+  def remove_metadata_block_picture(file)
+    tempfile1 = "__vorbiscomment_temp.txt"
+    tempfile2 = "__vorbiscomment_temp_except_picture.txt"
+
+    system %Q! vorbiscomment -c #{tempfile1} "#{file}" !
+
+    # TODO grep への依存をなくす
+    system %Q! grep -v METADATA_BLOCK_PICTURE #{tempfile1} > #{tempfile2} !
+
+    system %Q! vorbiscomment -w -c #{tempfile2} "#{file}" !
+
+    FileUtils.rm tempfile1
+    FileUtils.rm tempfile2
   end
 
 
@@ -78,7 +122,16 @@ class Control
         #pp "over_end?: #{get_time_sec} > #{get_length_sec} =>  #{over_end} / player_status: #{player_status}"
         #exit if over_end
 
-        if (player_status == MPlayer::READY && @play_next) ||
+        if player_status == MPlayer::ABNORMAL &&
+            invalid_vorbis?(@local_path)
+
+          warn "invalid Ogg Vorbis file (for mplayer)"
+
+          # METADATA_BLOCK_PICTURE を除去してリトライ
+          remove_metadata_block_picture(@local_path)
+          play()
+
+        elsif (player_status == MPlayer::READY && @play_next) ||
             (player_status == MPlayer::ABNORMAL && @play_next) ||
             over_end
           move(1)
