@@ -12,7 +12,7 @@ require "channel"
 
 require "zipruby"
 require "vorbis_comment"
-require "id3lib"
+require "taglib"
 require "flacinfo"
 
 
@@ -258,34 +258,33 @@ def read_metadata(path, local_path)
   when /\.flac$/i
     return Anbt::Flac::metadata(local_path)
   when ".mp3", ".MP3"
-    frame = get_id3_frame(local_path, :TIT2 )
-    title = frame[:text_u8] rescue title = nil
+    TagLib::FileRef.open(local_path) do |fileref|
+      if fileref.null?
+        raise
+      end
 
-    frame = get_id3_frame(local_path, :TALB)
-    album_title = frame[:text_u8] rescue album_title = nil
-    
-    frame = get_id3_frame(local_path, :TPE1)
-    artist_name = begin
-                    frame[:text_u8]
-                  rescue
-                    path
-                  end
-    artists << {
-      'name'=>artist_name
-    }
+      tag = fileref.tag
 
-    #license['url'] = get_id3_frame(local_path, :WCOP)
-    temp_url = get_id3_frame(local_path, :WCOP)
-    if not temp_url.nil?
-      lincense = {
-        "url" => temp_url,
-        "verify_at" => nil
-      }
-    end
-    
-    release_url = get_id3_frame(local_path, :WOAF)
-    tr_num = get_id3_frame(local_path, :TRCK)[:text_u8] rescue nil
-    pub_date = get_id3_frame(local_path, :TYER)[:text] rescue nil
+      title = tag.title
+
+      # tag.frame_list("TPE1").first
+      artist_name = tag.artist
+      artists << { "name" => artist_name }
+
+      album_title = tag.album
+
+      tr_num = tag.track
+
+      # wcop = tag.frame_list("WCOP").first
+      # license = {
+      #   "url" => wcop,
+      #   "verify_at" => nil
+      # }
+
+      # release_url = tag.frame_list("WOAF").first
+
+      # pub_date = tag.frame_list("TYER").first
+    end 
   end
   
   {

@@ -7,7 +7,7 @@ require "pp"
 require "kconv"
 require "tmpdir"
 require "optparse"
-require "id3lib"
+require "taglib"
 require "ya2yaml"
 require "zipruby"
 
@@ -180,19 +180,20 @@ donation_info_url:
 
     case ext
     when /\.mp3$/i
-      tag = ID3Lib::Tag.new(temp_path, ID3Lib::V2)
-      tag.each do |frame|
-        case frame[:id]
-        when :WOAS
-          result[:release_url] = frame[:url]
-        when :WCOP
-          result[:license_url] = frame[:url]
-        when :TALB
-          result[:album_title] = kconv_u16tou8(frame[:text])
-        else
-          ;
-        end
-      end
+      warn "TODO"
+      # tag = ID3Lib::Tag.new(temp_path, ID3Lib::V2)
+      # tag.each do |frame|
+      #   case frame[:id]
+      #   when :WOAS
+      #     result[:release_url] = frame[:url]
+      #   when :WCOP
+      #     result[:license_url] = frame[:url]
+      #   when :TALB
+      #     result[:album_title] = kconv_u16tou8(frame[:text])
+      #   else
+      #     ;
+      #   end
+      # end
     end
     FileUtils.rm(temp_path)
     
