@@ -1,4 +1,4 @@
-#! /usr/bin/ruby1.8 -Ku
+#!/usr/bin/env ruby
 
 # $LOAD_PATH << "/home/user/ruby-src/zip-player"
 
