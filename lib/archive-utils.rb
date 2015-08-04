@@ -149,6 +149,8 @@ def arc_root_dir(arc_path)
 end
 
 
+## copy from archive to file or dir
+## todo: rename cp_from_arc
 def arc_cp(arc_path, entry, dest_path)
   $stderr.puts "arc_path: #{arc_path} / dest_path: #{dest_path}" if $DEBUG
   temp_path = nil
@@ -207,10 +209,12 @@ def arc_mv(arc_path, entry, newentry)
 end
 
 
+## copy/overwrite file to archive
+## not move
 def arc_add_overwrite(arc_path, path, entry)
-  puts "arc_path = #{arc_path}"
-  puts "path = #{path}"
-  puts "entry = #{entry}"
+  # puts "arc_path = #{arc_path}"
+  # puts "path = #{path}"
+  # puts "entry = #{entry}"
 
   temp_path = "____gqwhrkahfjk1ahfh2jek7af"
 
@@ -251,6 +255,8 @@ def read_metadata(path, local_path)
     if comment.fields["TRACKNUMBER"]
       tr_num = comment.fields["TRACKNUMBER"].to_s
     end
+  when /\.flac$/i
+    return Anbt::Flac::metadata(local_path)
   when ".mp3", ".MP3"
     frame = get_id3_frame(local_path, :TIT2 )
     title = frame[:text_u8] rescue title = nil
@@ -268,20 +274,29 @@ def read_metadata(path, local_path)
       'name'=>artist_name
     }
 
-    license['url'] = get_id3_frame(local_path, :WCOP)
+    #license['url'] = get_id3_frame(local_path, :WCOP)
+    temp_url = get_id3_frame(local_path, :WCOP)
+    if not temp_url.nil?
+      lincense = {
+        "url" => temp_url,
+        "verify_at" => nil
+      }
+    end
+    
     release_url = get_id3_frame(local_path, :WOAF)
     tr_num = get_id3_frame(local_path, :TRCK)[:text_u8] rescue nil
     pub_date = get_id3_frame(local_path, :TYER)[:text] rescue nil
   end
   
   {
-    'title'=>title,
-    'artists'=>artists,
-    'license'=>license,
-    'release_url'=>release_url,
-    'track_number'=>tr_num,
-    'album_title'=>album_title,
-    'pub_date'=>pub_date
+    'title'        => title,
+    'artists'      => artists,
+    'license'      => license,
+    'release_url'  => release_url,
+    'track_number' => tr_num,
+    'album_title'  => album_title,
+    'pub_date'     => pub_date,
+    'comment'      => comment
   }
 end
 
@@ -310,7 +325,7 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   tr.album['title'] = tag['album_title']
   tr.cast_date = Time.now
   tr.track_number = tag['track_number'] if tag['track_number']
-  tr.licenses << tag['licenses'] if not tag['license'].empty?
+  tr.licenses << tag['license'] if not tag['license'].empty?
 
   if tag['artists'].empty? && arc_template
     ## template を優先
@@ -395,7 +410,44 @@ def append_to_playlist(playlist, tr)
 end
 
 
-def append_archive_file(playlist,
+def make_template_track(info, arc_path)
+  template = Track.new
+
+  if info
+    if info['album']
+      template.album['title'] = if info['album']['title']
+                                  info['album']['title']
+                                else
+                                  info['album_title']
+                                end
+      template.album['id'] = if info['album']['id']
+                               info['album']['id']
+                             else
+                               info['album_id']
+                             end
+    end
+    puts "track template: "
+    pp template
+
+    template.release_url = info["release_url"] if info["release_url"]
+
+    if info["licenses"]
+      template.licenses = info["licenses"]
+    elsif info["license_url"]
+      $stderr.puts "license_url is obsolete!"
+      #template.license_url = info["license_url"]
+    end
+
+    template.artists = info["artists"] if info["artists"]
+  end
+
+  template.path = arc_path
+
+  template
+end
+
+
+def append_tracks_from_archive(playlist,
                         arc_path, # basename
                         temp_dir
                         )
@@ -419,34 +471,7 @@ def append_archive_file(playlist,
   end
 
   # テンプレートtrack作成
-  template = Track.new
-  if info
-    if info['album']
-      template.album['title'] = if info['album']['title']
-                                  info['album']['title']
-                                else
-                                  info['album_title']
-                                end
-      template.album['id'] = if info['album']['id']
-                               info['album']['id']
-                             else
-                               info['album_id']
-                             end
-    end
-    pp template
-
-    template.release_url = info["release_url"] if info["release_url"]
-
-    if info["licenses"]
-      template.licenses = info["licenses"]
-    elsif info["license_url"]
-      $stderr.puts "license_url is obsolete!"
-      #template.license_url = info["license_url"]
-    end
-
-    template.artists = info["artists"] if info["artists"]
-  end
-  template.path = arc_path
+  template = make_template_track(info, arc_path)
   
   tracks = arc_get_tracks(arc_path, template, temp_dir)
 
@@ -475,7 +500,7 @@ if $0 == __FILE__
 #   playlist = [123]
 #   case File.extname(file)
 #   when /^\.(zip)$/
-#     append_archive_file(playlist, file)
+#     append_tracks_from_archive(playlist, file)
 #   else
 #     append_single_file(playlist, file)
 #   end

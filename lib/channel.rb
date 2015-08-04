@@ -151,9 +151,14 @@ class Track
       return nil
     end
 
-    @licenses.map {|l|
-      CCL.url2abbr(l["url"])
-    }.join(" / ")
+    begin
+      @licenses.map {|l|
+        CCL.url2abbr(l["url"])
+      }.join(" / ")
+    rescue => e
+      STDERR.puts e.class, e.message, e.backtrace
+      "unknown or invalid license %s" % @licenses.map {|l| l["url"] }.join(" / ")
+    end
   end
   
   def license_links
