@@ -1,0 +1,22 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    cicphash (1.1.0)
+    flacinfo-rb (1.0)
+    mini_magick (4.2.9)
+    taglib-ruby (0.7.0)
+    vorbis_comment (1.0.2)
+      cicphash (>= 1.0.0)
+    ya2yaml (0.31)
+    zipruby (0.3.6)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  flacinfo-rb
+  mini_magick
+  taglib-ruby
+  vorbis_comment
+  ya2yaml
+  zipruby
