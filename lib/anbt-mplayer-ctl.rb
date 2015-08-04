@@ -249,7 +249,7 @@ class MPlayer
         begin
           @lastmsg = @receive.readline("\r")
         rescue => e
-          $stderr.puts e.message, e.backtrace
+          $stderr.puts e.class, e.message, e.backtrace
           p @receive
           @status = MPlayer::ABNORMAL
           stop_inspector
