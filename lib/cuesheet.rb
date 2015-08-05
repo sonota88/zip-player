@@ -1,4 +1,3 @@
-#!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 
 ## 文字コード判別用テキスト

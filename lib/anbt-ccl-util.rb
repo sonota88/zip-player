@@ -1,5 +1,3 @@
-#!/usr/bin/ruby -Ku
-
 module CCL
   def self.url_parse(urlstr)
     return nil unless urlstr
