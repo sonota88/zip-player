@@ -106,6 +106,4 @@ if $0 == __FILE__
   # pp sec2mmssxx(3600.5864)
   # pp sec2mmssxx(5999.5864)
   exit
-
 end
-

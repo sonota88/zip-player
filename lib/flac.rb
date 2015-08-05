@@ -103,7 +103,7 @@ class Anbt
     
     def self.metadata(path)
       title       = nil
-      artist      = nil ## not ARTIST*S*
+      artist      = nil # not ARTIST*S*
       album       = nil
       tracknumber = nil
       comment     = nil

@@ -7,7 +7,6 @@ module CCL
   end
   
   def self.url2abbr(urlstr)
-    #$stderr.puts "@@@@ urlstr = __#{urlstr}__"
     path = url_parse(urlstr) 
     return nil unless path
     
@@ -18,8 +17,6 @@ module CCL
     type    = pieces[2]
     version = pieces[3]
     nokori  = pieces[4]
-
-    # $stderr.puts [urlstr, type, version, nokori].map{|s| " __#{s}__ "} if $DEBUG
 
     case type
     when "publicdomain"
@@ -72,4 +69,3 @@ License Properties - CC Wiki
 http://wiki.creativecommons.org/License_Properties
 
 =end
-

@@ -60,7 +60,6 @@ end
 
 
 def read_file(arc_path, target)
-  # $stderr.puts "xxarc_path = #{arc_path}"
   content = nil
 
   case File.extname(arc_path)
@@ -90,7 +89,6 @@ end
 
 
 def file_list_zip(arc_path)
-  # STDERR.puts arc_path
   result = []
   Zip::Archive.open(arc_path) do |ar|
     n = ar.num_files # number of entries
@@ -159,9 +157,7 @@ def arc_cp(arc_path, entry, dest_path)
 
   Zip::Archive.open( arc_path ) do |ar|
     ar.each do |zf|
-      # warn "^^ #{zf.name} ^^^^^^^^^^^^^^^^^^^^^^^"
       next if zf.name != entry
-      # puts zf.name
 
       if zf.directory?
         FileUtils.mkdir_p(zf.name)
@@ -174,7 +170,6 @@ def arc_cp(arc_path, entry, dest_path)
         else
           temp_path = dest_path
         end
-        #warn "temp_path = #{temp_path}"
         open( temp_path, 'wb') do |f|
           f << zf.read
         end
@@ -212,10 +207,6 @@ end
 ## copy/overwrite file to archive
 ## not move
 def arc_add_overwrite(arc_path, path, entry)
-  # puts "arc_path = #{arc_path}"
-  # puts "path = #{path}"
-  # puts "entry = #{entry}"
-
   temp_path = "____gqwhrkahfjk1ahfh2jek7af"
 
   arc_rm(arc_path, entry)
@@ -300,10 +291,8 @@ def read_metadata(path, local_path)
 end
 
 
-# result << audio2track(temp_audio_path, template, entry)
 def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   puts "audio2track()" if $DEBUG
-  #puts path, arc_template.path, entry
 
   if arc_template
     audio_path = File.join(dir_temp, File.basename(path))
@@ -327,10 +316,10 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   tr.licenses << tag['license'] if not tag['license'].empty?
 
   if tag['artists'].empty? && arc_template
-    ## template を優先
+    # template を優先
     tr.artists = arc_template.artists
   else
-    ## タグを優先
+    # タグを優先
     tr.artists = tag['artists']
   end
 
@@ -345,14 +334,11 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
     end
   end
 
-  #puts "RRRRRRRRRRRRRRRRRRRRRRRRRR", tr.path if $VERBOSE
-
   tr
 end
 
 
 def arc_get_tracks(arc_path, template, dir_temp)
-  $stderr.puts "++++++++++ #{arc_path}" if $VERBOSE
   #local_path = File.join( $PREFS.DIR_CACHE_SUB, arc_path )
 
   tracks = []
@@ -367,14 +353,14 @@ def arc_get_tracks(arc_path, template, dir_temp)
       ext = File.extname(entry)
       next unless /^\.(ogg|oga|flac|mp3)$/ =~ ext
 
-      ## 一時ファイル取り出す
+      # 一時ファイル取り出す
       #temp_audio_path = arc_cp(local_path, entry, File.join($PREFS.DIR_TEMP, "000#{ext}") )
       temp_audio_path = arc_cp(arc_path,
                                entry,
                                File.join(dir_temp, "000#{ext}")
                                )
       
-      ## タグ読む
+      # タグ読む
       begin
         tracks << audio2track(temp_audio_path, dir_temp, template, entry)
       rescue => e
@@ -399,10 +385,6 @@ end
 
 
 def append_to_playlist(playlist, tr)
-  # pp 6666699999, [].include?( tr.to_ezhash),
-  # playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash ),
-  # playlist.map{|e| e.to_ezhash}
-  
   #if not playlist.map{|e| e.to_ezhash}.include?( tr.to_ezhash )
     playlist << tr
   #end
@@ -507,7 +489,7 @@ if $0 == __FILE__
 #   puts playlist.to_yaml
 
 
- #  tag = read_metadata("Yoma_Aoki__02 - girl age ガールエージ.mp3",
+#  tag = read_metadata("Yoma_Aoki__02 - girl age ガールエージ.mp3",
 #                       "test/sample/Yoma_Aoki__02 - girl age ガールエージ.mp3")
 
   path = ARGV[0]

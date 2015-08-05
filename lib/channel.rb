@@ -64,8 +64,6 @@ class PlayLists
 end
 
 
-
-
 class Track
   # essential
   attr_accessor :title, :artists, :path
@@ -77,7 +75,7 @@ class Track
   attr_accessor :tags, :sys_tags
   attr_accessor :description
   attr_accessor :cast_from, :file_exist_flag
-  #  attr_accessor :album_title, :album_id
+  # attr_accessor :album_title, :album_id
   attr_accessor :album
   attr_accessor :cast_date
   attr_accessor :volume
@@ -87,7 +85,7 @@ class Track
   
   def initialize
     @artists = []
-    #    @license_url = []
+    # @license_url = []
     @licenses = []
     @release_url = []
     # @recast_from = []
@@ -166,7 +164,7 @@ class Track
 #       %Q!<a href="%s">%s</a>! % [ url, CCL.url2abbr(url) ] 
 #     }
     temp = %Q!<a href="%s">%s</a>! % [ @licenses.first['url'], CCL.url2abbr(@licenses.first['url']) ] 
-    #return temp.join(" / ")
+    # return temp.join(" / ")
     temp
   end
   
@@ -199,7 +197,7 @@ class Track
       end
     end
     
-    #return @release_url.first
+    # return @release_url.first
   end
   
   def album_title_with_id
@@ -220,7 +218,6 @@ class Track
 
   def to_ezhash
     @album_title ||= nil if $DEBUG
-    #"#{get_artists()} #{@title} #{@album_title} #{@path}"
     "#{get_artists()} #{@title} #{@album_title} #{@path}"
   end
 
@@ -265,17 +262,17 @@ class Track
   def local_path
     if self.is_archive?
       arc_file, entry = self.arc_file_entry()
-      #arc_path = File.join( $PREFS.DIR_CACHE_SUB, arc_file)
+      # arc_path = File.join( $PREFS.DIR_CACHE_SUB, arc_file)
       arc_path = arc_file
       filenm = File.basename(entry)
       
-      #"#{$PREFS.DIR_ARC_TEMP}/#{filenm}"
+      # "#{$PREFS.DIR_ARC_TEMP}/#{filenm}"
       "#{filenm}"
     else
       @path
     end
   end
-end ## Track
+end
 
 
 if __FILE__ == $0

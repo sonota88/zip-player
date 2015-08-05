@@ -77,7 +77,6 @@ class MPlayer
 #     @th_watch = Thread.new{
 #       loop{
 #         if @status == PLAY
-#           puts "XXXXXXXXXXXXXXXXXXX #{@receive}"
 # #          if str = @child_in.gets("\r")
 # #           if str = @receive.gets("\r") 
 # #             @time_str = str
@@ -128,8 +127,6 @@ class MPlayer
         cmdstr = "#{@mplayerpath} #{@mplayeropts} #{@playlistfile}"
         exec cmdstr
       }
-      
-      #print "#{@mplayerpath} #{@mplayeropts} #{@playlistfile}\n"
       
       send.close
       receive.close
@@ -220,7 +217,6 @@ class MPlayer
       # str = "seek %.04f type=1\n" % [ percent ]
       str = "seek %d 1\n" % [ percent ]
       #str = "seek 10% type=1\n"
-      # puts str
       @send.write(str)
       return true
     else
@@ -257,7 +253,6 @@ class MPlayer
         end
         
         @lastmsg.chop!
-        #print @lastmsg
         case @lastmsg
         when /^Volume: (\d+) %/
           @volume = $1.to_i
@@ -294,7 +289,7 @@ class MPlayer
           @send.close
           @receive.close
         else
-          ##print @lastmsg,"\n"
+          ;
         end 
         critical = false
       end
@@ -311,7 +306,6 @@ class MPlayer
   def get_time_sec
     if @time_str
       if /^A:(.+?)\s\(/ =~ @time_str
-        #pp "&&&&&&&&&&&& %s - %s" % [$1, $1.to_f]
         return $1.to_f
       end
     else
@@ -366,8 +360,6 @@ x.stop
 =end
 
 if $0 == __FILE__
-  #$stderr.puts ARGV[0] ; exit
-
   x = MPlayer.new(" -nolirc -ao alsa ")
   x.load_playlist([ARGV[0]])
 

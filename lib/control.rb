@@ -48,7 +48,6 @@ class Control
   end
 
 
-  ##
   # METADATA_BLOCK_PICTURE を持っている Ogg Vorbis ファイルの場合
   # true を返す。
   # see http://d.hatena.ne.jp/sonota88/20120128/1327759784
@@ -105,13 +104,11 @@ class Control
           if get_length_sec
             @percent = get_time_sec() / get_length_sec() * 100
           end
-          #pp "time: %.2f / length: %.2f / %.2f %%" % [get_time_sec, get_length_sec, @percent]
 
           if not @parent.in_seek?
             @parent.set_seekbar_percent(@percent)
           end
         rescue => e
-          # $stderr.puts "%s / %s" % [ @control.get_time_sec(), @control.get_length_sec() ]
           $stderr.puts e.message, e.backtrace
         end
         
@@ -119,8 +116,7 @@ class Control
         over_end = begin  ; get_time_sec() > get_length_sec()
                    rescue ; false
                    end
-        #pp "over_end?: #{get_time_sec} > #{get_length_sec} =>  #{over_end} / player_status: #{player_status}"
-        #exit if over_end
+        # exit if over_end
 
         if player_status == MPlayer::ABNORMAL &&
             invalid_vorbis?(@local_path)
@@ -138,7 +134,6 @@ class Control
           play()
         end
 
-        #sleep 1
         sleep 0.05
       }
     }
@@ -233,8 +228,6 @@ class Control
 
     if not File.exist?(@local_path)
       $stderr.puts "! could not find: #{@local_path}"
-      #       $stderr.puts "$pls.list.size = #{$pls.list.size}"
-      #       $stderr.puts "$pls.current_index = #{$pls.current_index}"
       # tr.file_exist_flag = false
       return :skip
     end
@@ -271,7 +264,7 @@ class Control
 
     @player.seek_sec(tr.start_sec, :absolute)
 
-    #refresh_info()
+    # refresh_info()
   end
 
 
@@ -403,7 +396,7 @@ class Control
 
 
   def open_release_url()
-    #track = $pls[$pls.current_index]
+    # track = $pls[$pls.current_index]
     tr = $pl.current_track
     if tr.get_release_url()
       puts "release URL: #{tr.get_release_url()}"
@@ -499,7 +492,6 @@ class Control
   
   def prepare_album(arc_location, temp_dir)
     $pl = PlayList.new($app)
-    #pp $pl ; exit
 
     t = Thread.new {
       if /^(http|ftp)/ =~ arc_location

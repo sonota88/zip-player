@@ -19,7 +19,6 @@ class CueSheet
 
     loop {
       line = lines[0]
-      #pp line
 
       case line
       when /  TRACK (\d\d) AUDIO/
@@ -33,7 +32,6 @@ class CueSheet
       when /    PERFORMER "(.+)"/
         temp[:performer] = $1
       when /    INDEX (\d\d) (\d\d:\d\d:\d\d)/
-        #puts $1.to_i, $2
         temp[:start_sec] = $2
       end
 

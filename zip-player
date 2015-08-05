@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-# $LOAD_PATH << "/home/user/ruby-src/zip-player"
-
 require "rubygems"
 require "pp"
 require "fileutils"
@@ -34,7 +32,6 @@ end
 ################################################################
 
 init()
-# pp $app_home, $temp_dir, $LOAD_PATH ; exit
 
 require "gui-tk"
 require "playlist"
