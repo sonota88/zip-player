@@ -197,7 +197,7 @@ end
 
 
 def arc_mv(arc_path, entry, newentry)
-  $stderr.puts "arc_mv"
+  _debug "arc_mv"
   arc_cp(arc_path, entry, newentry)
   arc_rm(arc_path, entry)
 end
@@ -406,15 +406,15 @@ def make_template_track(info, arc_path)
                                info['album_id']
                              end
     end
-    puts "track template: "
-    pp template
+    _debug "track template: "
+    _debug_pp template
 
     template.release_url = info["release_url"] if info["release_url"]
 
     if info["licenses"]
       template.licenses = info["licenses"]
     elsif info["license_url"]
-      $stderr.puts "license_url is obsolete!"
+      _debug "license_url is obsolete!"
       #template.license_url = info["license_url"]
     end
 
@@ -439,7 +439,7 @@ def append_tracks_from_archive(playlist,
   info = nil
   entries.each {|entry|
     if /info.yaml$/ =~ entry
-      puts "info.yaml exist."
+      _debug "info.yaml exist."
       temp = read_file(arc_path, entry)
       info = YAML.load( temp )
       pp info if $DEBUG
@@ -462,15 +462,13 @@ end
 
 
 def append_single_file(playlist, path)
-  STDERR.puts "F: #{path}"
+  _debug "append_single_file: #{path}"
   #track = get_track(path)
   track = audio2track(path)
   #  pp track
 
   append_to_playlist(playlist, track)
 end
-
-
 
 
 if $0 == __FILE__

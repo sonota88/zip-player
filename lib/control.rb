@@ -200,16 +200,16 @@ class Control
 
 
   def prepare_track
-    $stderr.puts "prepare_track"
+    _debug "prepare_track"
     tr = $pl.current_track
     
     @local_path = File.join($temp_dir, tr.local_path() )
-    p "@local_path = #{@local_path}"
+    _debug "@local_path = #{@local_path}"
     
-    $stderr.puts "archive? = #{tr.is_archive?}"
+    _debug "archive? = #{tr.is_archive?}"
     if tr.is_archive?
       arc_file, entry = tr.arc_file_entry()
-      p "arc_file, entry = #{arc_file} / #{entry}"
+      _debug "arc_file, entry = #{arc_file} / #{entry}"
       #arc_path = File.join( $PREFS.DIR_CACHE_SUB, arc_file)
       arc_path = arc_file
       begin
@@ -223,10 +223,10 @@ class Control
       @local_path = tr.local_path
       arc_path = tr.local_path
     end
-    p "@local_path = #{@local_path}"
+    _debug "@local_path = #{@local_path}"
 
     if not File.exist?(@local_path)
-      $stderr.puts "! could not find: #{@local_path}"
+      _debug "! could not find: #{@local_path}"
       # tr.file_exist_flag = false
       return :skip
     end
@@ -252,7 +252,7 @@ class Control
 
     @parent.update_cover()
 
-    puts "play", file_list
+    _debug "play", file_list
     
     refresh_info()
 
@@ -268,7 +268,7 @@ class Control
 
 
   def move(diff)
-    puts "move: #{$pl.current_index} => #{$pl.current_index + diff} / {$pl.list.size-1}"
+    _debug "move: #{$pl.current_index} => #{$pl.current_index + diff} / {$pl.list.size-1}"
     $pl.current_index += diff
     if $pl.current_index <= 0
       $pl.current_index = 0
@@ -282,15 +282,15 @@ class Control
 
   
   def move_to(target)
-    puts "move to: #{$pl.current_index+1} => #{target+1} / #{$pl.size}"
+    _debug "move to: #{$pl.current_index+1} => #{target+1} / #{$pl.size}"
     $pl.current_index = target
-    puts $pl.current_track.to_ezhash
+    _debug $pl.current_track.to_ezhash
     $pl.each_with_index{|t, n|
       if t.to_ezhash == $pl.current_track.to_ezhash
         $pl.current_index = n
       end
     }
-    puts $pl.current_track.to_ezhash
+    _debug $pl.current_track.to_ezhash
     
     if player_status == MPlayer::PLAY
       stop()
@@ -309,7 +309,7 @@ class Control
 
 
   def seek(sec)
-    puts "seek(#{sec})"
+    _debug "seek(#{sec})"
     @player.seek_sec(sec, :relative)
   end
   
@@ -398,7 +398,7 @@ class Control
     # track = $pls[$pls.current_index]
     tr = $pl.current_track
     if tr.get_release_url()
-      puts "release URL: #{tr.get_release_url()}"
+      _debug "release URL: #{tr.get_release_url()}"
       system %Q!#{$web_browser} #{tr.get_release_url()}!
     else
       TkWarning.new("There is not release_url.")
@@ -413,8 +413,8 @@ class Control
   end
 
   def edit_albuminfo
-    puts $arc_file, $pl.current_index
-    puts tempfile = File.join( $app_home, "__temp_info.yaml")
+    _debug $arc_file, $pl.current_index
+    _debug tempfile = File.join( $app_home, "__temp_info.yaml")
 
     temp_index = $pl.current_index
 
@@ -432,8 +432,7 @@ class Control
     Dir.open($temp_dir).each {|path|
       next if path == "."
       next if path == ".."
-      print "deleting: "
-      puts File.join( $temp_dir, path)
+      _debug "deleting: ", File.join( $temp_dir, path)
       File.delete File.join( $temp_dir, path)
     }
   end
@@ -483,7 +482,7 @@ class Control
     when /\.flac$/i
       append_flac(pl, arc_path, temp_dir)
     else
-      $stderr.puts "File type not recognizable."
+      _debug "File type not recognizable."
       exit
     end
   end
@@ -497,7 +496,8 @@ class Control
         url = arc_location
         temp_file = url.split("/").last
         $arc_file = File.expand_path( File.join( temp_dir, "__temp__" + temp_file ) )
-        pp cmd = %Q! wget "#{url}" -O "#{$arc_file}" !
+        cmd = %Q! wget "#{url}" -O "#{$arc_file}" !
+        _debug cmd
 
         require "tk-process-msg"
         process_msg(cmd, :stderr) {|line|

@@ -147,7 +147,7 @@ donation_info_url:
 
 
   def exec_cmd(str)
-    $stderr.puts str
+    _debug str
     system str
   end
 
@@ -170,7 +170,7 @@ donation_info_url:
       raise "could not find mp3."
     end
 
-    $stderr.puts entry
+    _debug entry
 
     temp_path = File.join(Dir.tmpdir, "__#{File.basename(__FILE__)}_temp#{ext}")
     open(temp_path, "wb") do |f|
@@ -179,7 +179,7 @@ donation_info_url:
 
     case ext
     when /\.mp3$/i
-      warn "TODO"
+      _todo "(get_album_metadata)"
       # tag = ID3Lib::Tag.new(temp_path, ID3Lib::V2)
       # tag.each do |frame|
       #   case frame[:id]
@@ -221,8 +221,8 @@ donation_info_url:
       info_exist = false
     end
 
-    puts "info_exist: #{info_exist}"
-    puts "info_valid: #{info_valid}"
+    _debug "info_exist: #{info_exist}"
+    _debug "info_valid: #{info_valid}"
     
     result = {}
 
@@ -237,7 +237,7 @@ donation_info_url:
                                 'verify_at'=>existing[:release_url]}]
         result["album"]["title"] =  existing[:album_title]
       else
-        print "no info.\n"
+        _debug "no info.\n"
       end
     end
 
@@ -282,7 +282,7 @@ donation_info_url:
     
     postedit_str = File.read(temp_infopath).toutf8
     if preedit_str == postedit_str
-      $stderr.puts "Nothing changed."
+      _debug "Nothing changed."
       return
     end
 

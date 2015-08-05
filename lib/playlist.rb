@@ -13,7 +13,7 @@ class PlayList
     @list = []
     @current_index = 0
 
-    $stderr.puts "---- add_observer ----" if $DEBUG
+    _debug "---- add_observer ----" if $DEBUG
     
     begin
       self.add_observer(app)
@@ -138,23 +138,20 @@ class PlayList
     @list << elem
 
     temp_hash = current_track.to_ezhash
-    $stderr.puts "current track ez hash = #{temp_hash}"
+    _debug "current track ez hash = #{temp_hash}"
     # $pls.list = uniq_track( $pl.list )
     @list.uniq!
     
     if $DEBUG
-      $stderr.puts "--DDDDDDD #{current_index} // #{temp_hash} DDDDDDDD"
-      $stderr.puts "--FFFFFFFFF"
-      $stderr.puts @list.map{|a| a.to_ezhash }
-      $stderr.puts "--FFFFFFFFF"
+      _debug "#{current_index} // #{temp_hash}"
+      _debug @list.map{|a| a.to_ezhash }
     end
     current_index = @list.map{|a| a.to_ezhash }.index(temp_hash)
 
     if $DEBUG
-      $stderr.puts "--DDDDDDDEE #{current_index} DDDDDDDD"
-      $stderr.print "#{current_index} / #{@list.size}\n"
+      _debug "#{current_index} / #{@list.size}\n"
       sleep 2
-      $stderr.puts "--DDDDDDD => #{current_index} DDDDDDDD"
+      _debug current_index
     end
 
     changed

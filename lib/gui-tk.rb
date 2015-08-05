@@ -64,7 +64,7 @@ class App
 
 
   def update(type)
-    puts "update #{type}"
+    _debug "update #{type}"
     case type
     when :listbox
       update_listbox()
@@ -130,14 +130,14 @@ class App
     # detect click seekbar
     @seekbar.bind "ButtonPress-1", proc { 
       @pos_start = @percent
-      puts @pos_start
+      _debug @pos_start
       @seekbar_pressed = true
     }
 
     # スライダーから離れたらシーク実行
     @seekbar.bind "ButtonRelease-1", proc { 
       diff = @seekbar.value - @control.percent
-      puts "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
+      _debug "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
       @control.seek_percent_absolute(@seekbar.value)
       @seekbar_pressed = false
     }
@@ -199,16 +199,16 @@ class App
     @btn_play.command {
       case @control.player_status
       when MPlayer::PAUSED
-        puts "pause => play"
+        _debug "pause => play"
         @btn_play.text "||"
         @control.pause() 
       when MPlayer::PLAY
-        puts "play => pause"
+        _debug "play => pause"
         @btn_play.text ">"
         @control.pause() 
-        puts @control.player_status
+        _debug @control.player_status
       when MPlayer::INACTIVE, MPlayer::Ready, MPlayer::Abnormal
-        puts "not play, not pause"
+        _debug "not play, not pause"
       else
         raise "must not happen."
       end
@@ -326,7 +326,7 @@ class App
     rescue
       ;
     end
-    $stderr.puts "<< refresh_listbox"
+    _debug "<< refresh_listbox"
   end
 
   

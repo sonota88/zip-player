@@ -28,6 +28,17 @@ def init
   $arc_file = ARGV[0]
 end
 
+def _todo msg
+  $stderr.puts "[ TODO] #{msg}"
+end
+
+def _debug *msgs
+  $stderr.puts "[DEBUG] " + msgs.join(", ")
+end
+
+def _debug_pp *msgs
+  $stderr.puts "[DEBUG] " + msgs.map(&:pretty_inspect).join(", ")
+end
 
 ################################################################
 
