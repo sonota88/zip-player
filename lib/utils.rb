@@ -59,7 +59,7 @@ def sec2mmssxx(sec)
   sec -= min * 60
 
   if min >= 100
-    raise "Minute dirgit overflow: #{min}"
+    raise "Minute digit overflow: #{min}"
   end
 
   "%02d:%02d:%02d" % [min, sec, msec.to_s[0..1].to_i]
@@ -75,7 +75,7 @@ def sec2hhmmssxx(sec)
   min = sec / 60   ; sec -= min * 60
 
   if min >= 100
-    raise "Minute dirgit overflow: #{min}"
+    raise "Minute digit overflow: #{min}"
   end
 
   "%02d:%02d:%02d.%02d" % [h, min, sec, msec.to_s[0..1].to_i]
