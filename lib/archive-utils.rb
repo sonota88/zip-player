@@ -493,13 +493,13 @@ if $0 == __FILE__
 #                       "test/sample/Yoma_Aoki__02 - girl age ガールエージ.mp3")
 
   path = ARGV[0]
-#   tag = ID3Lib::Tag.new(path, ID3Lib::V1)
-#   pp tag; puts "====================================="
-#   tag = ID3Lib::Tag.new(path, ID3Lib::V2)
-#   pp tag; puts "====================================="
-  tag = ID3Lib::Tag.new(path).each{|t|
-    pp t; puts "====================================="
-  }
+  # tag = ID3Lib::Tag.new(path, ID3Lib::V1)
+  # pp tag; puts "====================================="
+  # tag = ID3Lib::Tag.new(path, ID3Lib::V2)
+  # pp tag; puts "====================================="
+  # tag = ID3Lib::Tag.new(path).each{|t|
+  #   pp t; puts "====================================="
+  # }
 
   tag = read_metadata(ARGV[0], ARGV[0])
   pp tag
