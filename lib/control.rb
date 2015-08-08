@@ -31,8 +31,8 @@ class Control
 
   DEFAULT_VOLUME = 75
   
-  def initialize(parent)
-    @parent = parent
+  def initialize(view)
+    @view = view
     # " -nolirc -ao alsa -af volume=-100 "
     # @player = MPlayer.new(" -nolirc -af volume=-100 ")
     # @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
@@ -43,7 +43,7 @@ class Control
 
 
   def init_observer
-    self.add_observer(@parent)
+    self.add_observer(@view)
   end
 
 
@@ -97,15 +97,15 @@ class Control
           next
         end
 
-        @parent.set_label( "time", "%s / %s" % [sec2hhmmssxx(get_time_sec()), sec2hhmmssxx(get_length_sec())] )
+        @view.set_label( "time", "%s / %s" % [sec2hhmmssxx(get_time_sec()), sec2hhmmssxx(get_length_sec())] )
 
         begin
           if get_length_sec
             @percent = get_time_sec() / get_length_sec() * 100
           end
 
-          if not @parent.in_seek?
-            @parent.set_seekbar_percent(@percent)
+          if not @view.in_seek?
+            @view.set_seekbar_percent(@percent)
           end
         rescue => e
           $stderr.puts e.message, e.backtrace
@@ -142,8 +142,8 @@ class Control
   def refresh_info
     tr = $pl.current_track
 
-    @parent.set_label("title", "title: #{tr.title}")
-    @parent.set_label("by",    "by: #{tr.get_artists()}")
+    @view.set_label("title", "title: #{tr.title}")
+    @view.set_label("by",    "by: #{tr.get_artists()}")
 
     $pl.current_track.volume ||= DEFAULT_VOLUME
 
@@ -156,7 +156,7 @@ class Control
     info << "-" * 32
     info << "\n"
     info << tr.ya2yaml
-    @parent.set_text("info", info)
+    @view.set_text("info", info)
   end
   
   
@@ -250,7 +250,7 @@ class Control
     
     changed ; notify_observers(:listbox)
 
-    @parent.update_cover()
+    @view.update_cover()
 
     _debug "play", file_list
     
@@ -299,7 +299,7 @@ class Control
     end
     
     begin
-      @parent.lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
+      @view.lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
     rescue
       puts $!
     end
@@ -471,7 +471,7 @@ class Control
 
 
     prepare_cover_img($pl.current_track, $arc_file)
-    @parent.update_cover()
+    @view.update_cover()
   end
 
 
