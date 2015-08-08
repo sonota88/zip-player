@@ -132,8 +132,8 @@ donation_info_url:
     @arc_path = arc_path
     @arc = ArchiveFile.new(arc_path)
 
-    @editor = case PLATFORM
-              when /mswin32/
+    @editor = case Config::CONFIG["host_os"]
+              when "mswin32", "mingw32"
                 "notepad.exe"
               else
                 "gedit"
@@ -363,8 +363,8 @@ if $0 == __FILE__
 
   ai = AlbumInfo.new(arc_path)
   if opts[:print]
-    puts case PLATFORM
-         when /mswin32/
+    puts case Config::CONFIG["host_os"]
+         when "mswin32", "mingw32"
            ai.content.tosjis
          else
            ai.content
