@@ -64,7 +64,6 @@ class App
 
 
   def update(type)
-    _debug "update #{type}"
     case type
     when :listbox
       update_listbox()
@@ -72,6 +71,8 @@ class App
       update_info()
     when :cover
       update_cover()
+    when :time
+      update_time()
     end
   end
 
@@ -350,6 +351,13 @@ class App
     info << tr.ya2yaml
 
     set_text "info", info
+  end
+
+
+  def update_time
+    current = sec2hhmmssxx(@control.get_time_sec())
+    length = sec2hhmmssxx(@control.get_length_sec())
+    set_label "time", "%s / %s" % [current, length]
   end
 
   

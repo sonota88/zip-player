@@ -100,8 +100,6 @@ class Control
           next
         end
 
-        @view.set_label( "time", "%s / %s" % [sec2hhmmssxx(get_time_sec()), sec2hhmmssxx(get_length_sec())] )
-
         begin
           if get_length_sec
             @percent = get_time_sec() / get_length_sec() * 100
@@ -135,6 +133,9 @@ class Control
           move(1)
           play()
         end
+
+        changed
+        notify_observers :time
 
         sleep 0.05
       }
