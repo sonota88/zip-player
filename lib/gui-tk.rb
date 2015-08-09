@@ -68,6 +68,8 @@ class App
     case type
     when :listbox
       update_listbox()
+    when :info
+      update_info()
     end
   end
 
@@ -327,6 +329,25 @@ class App
       ;
     end
     _debug "<< refresh_listbox"
+  end
+
+
+  def update_info
+    tr = @control.data[:current_tr]
+
+    set_label "title", "title: " + tr.title
+    set_label "by", "by: " + tr.get_artists()
+
+    info = ""
+    info << "volume: #{tr.volume} * #{$Prefs.global_volume} => #{tr.volume * $Prefs.global_volume / 100}"
+    info << "\n"
+    info << "license: #{tr.license_abbr}"
+    info << "\n"
+    info << "-" * 32
+    info << "\n"
+    info << tr.ya2yaml
+
+    set_text "info", info
   end
 
   

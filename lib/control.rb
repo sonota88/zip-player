@@ -27,7 +27,7 @@ end
 
 class Control
   include Observable
-  attr_reader :percent
+  attr_reader :percent, :data
 
   DEFAULT_VOLUME = 75
   
@@ -37,6 +37,9 @@ class Control
     # @player = MPlayer.new(" -nolirc -af volume=-100 ")
     # @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
     @player = MPlayer.new(" -nolirc -ao pulse ")
+    @data = {
+      :current_tr => nil
+    }
 
     watcher_thread()
   end
@@ -140,23 +143,10 @@ class Control
 
 
   def refresh_info
-    tr = $pl.current_track
-
-    @view.set_label("title", "title: #{tr.title}")
-    @view.set_label("by",    "by: #{tr.get_artists()}")
-
+    @data[:current_tr] = $pl.current_track
     $pl.current_track.volume ||= DEFAULT_VOLUME
-
-    info = ""
-
-    info << "volume: #{tr.volume} * #{$Prefs.global_volume} => #{tr.volume * $Prefs.global_volume / 100}"
-    info << "\n"
-    info << "license: #{tr.license_abbr}"
-    info << "\n"
-    info << "-" * 32
-    info << "\n"
-    info << tr.ya2yaml
-    @view.set_text("info", info)
+    changed
+    notify_observers(:info)
   end
   
   
