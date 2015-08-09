@@ -70,6 +70,8 @@ class App
       update_listbox()
     when :info
       update_info()
+    when :cover
+      update_cover()
     end
   end
 

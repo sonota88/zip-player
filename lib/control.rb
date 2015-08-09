@@ -239,8 +239,7 @@ class Control
     # @local_path = tr.local_path()
     
     changed ; notify_observers(:listbox)
-
-    @view.update_cover()
+    changed ; notify_observers(:cover)
 
     _debug "play", file_list
     
@@ -461,7 +460,7 @@ class Control
 
 
     prepare_cover_img($pl.current_track, $arc_file)
-    @view.update_cover()
+    changed; notify_observers(:cover)
   end
 
 
