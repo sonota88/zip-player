@@ -200,7 +200,7 @@ class App
   
   def init_widget_console
     frame_console = TkFrame.new
-    @btn_play = TkButton.new(frame_console){ text ">" }
+    @btn_play = TkButton.new(frame_console){ text "||" }
     @btn_play.command {
       case @control.player_status
       when MPlayer::PAUSED
