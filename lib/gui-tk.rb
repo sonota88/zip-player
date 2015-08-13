@@ -325,12 +325,8 @@ class App
       n += 1
     }
     
-    # hilite current track
-    begin
-      @lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
-    rescue
-      ;
-    end
+    update_current_track_highlight
+
     _debug "<< refresh_listbox"
   end
 
@@ -352,10 +348,15 @@ class App
 
     set_text "info", info
 
+    update_current_track_highlight
+  end
+
+
+  def update_current_track_highlight
     begin
       @lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
     rescue
-      puts $!
+      $stderr.puts $!
     end
   end
 
