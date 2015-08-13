@@ -41,7 +41,7 @@ class Control
       :current_tr => nil
     }
 
-    watcher_thread()
+    @watcher = create_watcher_thread()
   end
 
 
@@ -92,9 +92,9 @@ class Control
   end
 
 
-  def watcher_thread
-    @watcher = Thread.new {
-      loop{
+  def create_watcher_thread
+    Thread.new do
+      loop do
         if $pl == nil
           sleep 1
           next
@@ -134,8 +134,8 @@ class Control
         notify_observers :interval
 
         sleep 0.05
-      }
-    }
+      end
+    end
   end
 
 
