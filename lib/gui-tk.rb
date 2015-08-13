@@ -351,6 +351,12 @@ class App
     info << tr.ya2yaml
 
     set_text "info", info
+
+    begin
+      @lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
+    rescue
+      puts $!
+    end
   end
 
 
@@ -359,7 +365,7 @@ class App
     length = sec2hhmmssxx(@control.get_length_sec())
     set_label "time", "%s / %s" % [current, length]
 
-    if not in_seek?()
+    if not in_seek?
       set_seekbar_percent(@control.percent)
     end
   end

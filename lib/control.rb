@@ -284,12 +284,6 @@ class Control
       set_vol()
     end
     
-    begin
-      @view.lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
-    rescue
-      puts $!
-    end
-
     refresh_info()
   end
 
