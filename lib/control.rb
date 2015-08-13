@@ -104,10 +104,6 @@ class Control
           if get_length_sec
             @percent = get_time_sec() / get_length_sec() * 100
           end
-
-          if not @view.in_seek?
-            @view.set_seekbar_percent(@percent)
-          end
         rescue => e
           $stderr.puts e.message, e.backtrace
         end

@@ -358,6 +358,10 @@ class App
     current = sec2hhmmssxx(@control.get_time_sec())
     length = sec2hhmmssxx(@control.get_length_sec())
     set_label "time", "%s / %s" % [current, length]
+
+    if not in_seek?()
+      set_seekbar_percent(@control.percent)
+    end
   end
 
   
