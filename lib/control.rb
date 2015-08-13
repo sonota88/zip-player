@@ -284,6 +284,9 @@ class Control
       set_vol()
     end
     
+    changed
+    notify_observers :current_track_highlight
+
     refresh_info()
   end
 

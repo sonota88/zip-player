@@ -73,6 +73,8 @@ class App
       update_cover()
     when :interval
       update_interval()
+    when :current_track_highlight
+      update_current_track_highlight()
     end
   end
 
@@ -347,8 +349,6 @@ class App
     info << tr.ya2yaml
 
     set_text "info", info
-
-    update_current_track_highlight
   end
 
 
