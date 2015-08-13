@@ -71,8 +71,8 @@ class App
       update_info()
     when :cover
       update_cover()
-    when :time
-      update_time()
+    when :interval
+      update_interval()
     end
   end
 
@@ -354,7 +354,7 @@ class App
   end
 
 
-  def update_time
+  def update_interval
     current = sec2hhmmssxx(@control.get_time_sec())
     length = sec2hhmmssxx(@control.get_length_sec())
     set_label "time", "%s / %s" % [current, length]

@@ -135,7 +135,7 @@ class Control
         end
 
         changed
-        notify_observers :time
+        notify_observers :interval
 
         sleep 0.05
       }
