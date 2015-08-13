@@ -305,7 +305,7 @@ class App
     end
 
 
-    puts "update_listbox #{$pl.size}"
+    _debug "update_listbox #{$pl.size}"
     @lbox_playlist.delete(0, :end)
     
     n = 0
