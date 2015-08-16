@@ -220,6 +220,15 @@ def arc_add_overwrite(arc_path, path, entry)
 end
 
 
+def mp3_frame0_to_s_or_nil(tag, name)
+  if tag.frame_list(name).size > 0
+    tag.frame_list(name)[0].to_s
+  else
+    nil
+  end
+end
+
+
 def read_metadata(path, local_path)
   ext = File.extname(path)
 
@@ -249,6 +258,22 @@ def read_metadata(path, local_path)
   when /\.flac$/i
     return Anbt::Flac::metadata(local_path)
   when ".mp3", ".MP3"
+    artist_name = "{artist name}"
+
+    TagLib::MPEG::File.open(local_path) do |file|
+      tag = file.id3v2_tag
+
+      artist_name = mp3_frame0_to_s_or_nil(tag, "TPE1")
+      release_url = mp3_frame0_to_s_or_nil(tag, "WOAF")
+      pub_date    = mp3_frame0_to_s_or_nil(tag, "TYER")
+
+      wcop = mp3_frame0_to_s_or_nil(tag, "WCOP")
+      license = {
+        "url" => wcop,
+        "verify_at" => nil
+      }
+    end
+
     TagLib::FileRef.open(local_path) do |fileref|
       if fileref.null?
         raise
@@ -258,24 +283,15 @@ def read_metadata(path, local_path)
 
       title = tag.title
 
-      # tag.frame_list("TPE1").first
-      artist_name = tag.artist
-      artists << { "name" => artist_name }
+      artist_name ||= tag.artist
 
       album_title = tag.album
 
       tr_num = tag.track
 
-      # wcop = tag.frame_list("WCOP").first
-      # license = {
-      #   "url" => wcop,
-      #   "verify_at" => nil
-      # }
-
-      # release_url = tag.frame_list("WOAF").first
-
-      # pub_date = tag.frame_list("TYER").first
-    end 
+      pub_date ||= tag.year
+    end
+    artists << { "name" => artist_name }
   end
   
   {
