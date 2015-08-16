@@ -8,6 +8,7 @@ require "pp"
 require "rubygems"
 
 require "channel"
+require "track"
 
 require "zipruby"
 require "vorbis_comment"
