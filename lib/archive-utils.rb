@@ -280,15 +280,11 @@ def read_metadata(path, local_path)
       end
 
       tag = fileref.tag
-
       title = tag.title
-
-      artist_name ||= tag.artist
-
       album_title = tag.album
-
       tr_num = tag.track
 
+      artist_name ||= tag.artist
       pub_date ||= tag.year
     end
     artists << { "name" => artist_name }
