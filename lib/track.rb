@@ -76,8 +76,8 @@ class Track
   end
   
   def license_abbr
-    if @licenses == nil ||
-        @licenses == [] ||
+    if @licenses.nil? ||
+        @licenses.empty? ||
         @licenses == [nil]
       # || @licenses.first["verify_at"] == nil
       return nil
@@ -89,7 +89,9 @@ class Track
       }.join(" / ")
     rescue => e
       STDERR.puts e.class, e.message, e.backtrace
-      "unknown or invalid license %s" % @licenses.map {|l| l["url"] }.join(" / ")
+      "unknown or invalid license %s" % @licenses.map {|license|
+        license["url"]
+      }.join(" / ")
     end
   end
   

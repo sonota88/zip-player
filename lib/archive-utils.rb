@@ -16,9 +16,6 @@ require "taglib"
 require "flacinfo"
 
 
-# $DIR_CACHE_SUB = "cache_sub"
-# $DIR_TEMP = "temp_xxx"
-
 def kconv_u16tou8(str)
   Kconv.kconv( str, Kconv::UTF8, Kconv::UTF16 )
 end
@@ -325,7 +322,7 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   tr.album['title'] = tag['album_title']
   tr.cast_date = Time.now
   tr.track_number = tag['track_number'] if tag['track_number']
-  tr.licenses << tag['license'] if not tag['license'].empty?
+  tr.licenses << tag['license'] if tag['license']
   tr.release_url << tag['release_url'] if tag['release_url']
 
   if tag['artists'].empty? && arc_template
@@ -392,7 +389,6 @@ def arc_get_tracks(arc_path, template, dir_temp)
   else
     raise "File type not recongnized: #{arc_path} ."
   end
-  #puts result.to_yaml
 
   return tracks
 end
@@ -457,7 +453,6 @@ def append_tracks_from_archive(playlist,
       _debug "info.yaml exist."
       temp = read_file(arc_path, entry)
       info = YAML.load( temp )
-      pp info if $DEBUG
     end
   }
 
@@ -480,7 +475,6 @@ def append_single_file(playlist, path)
   _debug "append_single_file: #{path}"
   #track = get_track(path)
   track = audio2track(path)
-  #  pp track
 
   append_to_playlist(playlist, track)
 end
