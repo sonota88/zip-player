@@ -326,6 +326,7 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
   tr.cast_date = Time.now
   tr.track_number = tag['track_number'] if tag['track_number']
   tr.licenses << tag['license'] if not tag['license'].empty?
+  tr.release_url << tag['release_url'] if tag['release_url']
 
   if tag['artists'].empty? && arc_template
     # template を優先
@@ -335,15 +336,16 @@ def audio2track(path, dir_temp, arc_template=nil, entry=nil)
     tr.artists = tag['artists']
   end
 
-  if arc_template
-    tr.release_url = arc_template.release_url
+  if not tr.album['title']
     tr.album['title'] = arc_template.album['title']
+  end
 
-    if arc_template.licenses
-      tr.licenses = arc_template.licenses
-    elsif arc_template.license_url
-      tr.license_url = arc_template.license_url
-    end
+  if tr.release_url.empty?
+    tr.release_url = arc_template.release_url
+  end
+
+  if tr.licenses.empty?
+    tr.licenses = arc_template.licenses
   end
 
   tr
