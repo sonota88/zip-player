@@ -78,8 +78,8 @@ class Track
   def license_abbr
     if @licenses == nil ||
         @licenses == [] ||
-        @licenses == [nil] ||
-        @licenses.first["verify_at"] == nil
+        @licenses == [nil]
+      # || @licenses.first["verify_at"] == nil
       return nil
     end
 
