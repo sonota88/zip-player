@@ -21,41 +21,6 @@ def kconv_u16tou8(str)
 end
 
 
-def get_id3_frame(path, id)
-  #tag = ID3Lib::Tag.new(path)
-  tag = ID3Lib::Tag.new(path, ID3Lib::V2)
-  tag.each do |frame|
-    if frame[:id] == id
-      if frame[:textenc] && frame[:text]
-        if frame[:textenc] == 1
-          frame[:text_u8] = kconv_u16tou8( frame[:text] )
-        else
-          frame[:text_u8] = frame[:text]
-        end
-      end
-      return frame
-    end
-  end
-
-  # if failed with ID3Lib::V2 then
-  tag = ID3Lib::Tag.new(path, ID3Lib::V1)
-  tag.each do |frame|
-    if frame[:id] == id
-      if frame[:textenc] && frame[:text]
-        if frame[:textenc] == 1
-          frame[:text_u8] = kconv_u16tou8( frame[:text] )
-        else
-          frame[:text_u8] = frame[:text]
-        end
-      end
-      return frame
-    end
-  end
-
-  nil
-end
-
-
 def read_file(arc_path, target)
   content = nil
 
