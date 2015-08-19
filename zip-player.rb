@@ -16,7 +16,7 @@ def init
   else
     $app_home = File.dirname( File.expand_path($0) )
   end
-  $LOAD_PATH << File.join($app_home, "lib")
+  $LOAD_PATH.unshift File.join($app_home, "lib")
 
   $temp_dir = File.join($app_home, "temp")
 
