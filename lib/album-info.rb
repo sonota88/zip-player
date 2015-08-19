@@ -146,6 +146,15 @@ donation_info_url:
   end
 
 
+  def mp3_frame0_to_s_or_nil(tag, name)
+    if tag.frame_list(name).size > 0
+      tag.frame_list(name)[0].to_s
+    else
+      nil
+    end
+  end
+
+
   def get_album_metadata
     result = {}
 
@@ -173,20 +182,12 @@ donation_info_url:
 
     case ext
     when /\.mp3$/i
-      _todo "(get_album_metadata)"
-      # tag = ID3Lib::Tag.new(temp_path, ID3Lib::V2)
-      # tag.each do |frame|
-      #   case frame[:id]
-      #   when :WOAS
-      #     result[:release_url] = frame[:url]
-      #   when :WCOP
-      #     result[:license_url] = frame[:url]
-      #   when :TALB
-      #     result[:album_title] = kconv_u16tou8(frame[:text])
-      #   else
-      #     ;
-      #   end
-      # end
+      TagLib::MPEG::File.open(temp_path) do |file|
+        tag = file.id3v2_tag
+        result[:release_url] = mp3_frame0_to_s_or_nil(tag, "WOAS")
+        result[:license_url] = mp3_frame0_to_s_or_nil(tag, "WCOP")
+        result[:album_title] = mp3_frame0_to_s_or_nil(tag, "TALB")
+      end
     end
     FileUtils.rm(temp_path)
     
