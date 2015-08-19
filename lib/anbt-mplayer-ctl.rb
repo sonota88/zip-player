@@ -30,7 +30,6 @@
 
 =end
 
-require 'kconv'
 require 'socket'
 
 # mplayer のある場所

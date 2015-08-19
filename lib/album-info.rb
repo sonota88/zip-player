@@ -3,7 +3,6 @@
 require "rubygems"
 require "fileutils"
 require "pp"
-require "kconv"
 require "tmpdir"
 require "optparse"
 require "taglib"
@@ -141,11 +140,6 @@ donation_info_url:
   end
 
   
-  def kconv_u16tou8(str)
-    Kconv.kconv( str, Kconv::UTF8, Kconv::UTF16)
-  end
-
-
   def exec_cmd(str)
     _debug str
     system str
@@ -280,7 +274,7 @@ donation_info_url:
 
     exec_cmd( %Q! #{@editor} "#{temp_infopath}" ! )
     
-    postedit_str = File.read(temp_infopath).toutf8
+    postedit_str = File.read(temp_infopath)
     if preedit_str == postedit_str
       _debug "Nothing changed."
       return

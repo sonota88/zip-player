@@ -2,7 +2,6 @@
 
 $LOAD_PATH << File.dirname(__FILE__)
 
-require "kconv"
 require "pp"
 
 require "rubygems"
@@ -14,11 +13,6 @@ require "zipruby"
 require "vorbis_comment"
 require "taglib"
 require "flacinfo"
-
-
-def kconv_u16tou8(str)
-  Kconv.kconv( str, Kconv::UTF8, Kconv::UTF16 )
-end
 
 
 def read_file(arc_path, target)
