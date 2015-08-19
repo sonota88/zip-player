@@ -247,7 +247,7 @@ donation_info_url:
     if invalid_text
       preedit_str << invalid_text
     else
-      preedit_str << "（文字エンコーディング判別用テキスト / Text for determining encoding）"
+      preedit_str << "（エンコーディング判別用テキスト / Text for determining encoding）"
     end
     preedit_str << "\n"
   end
