@@ -90,7 +90,6 @@ def flac_tracks(flac_path, template)
 end
 
 
-class Anbt
   class Flac
     def self.readtag(path, tag)
       cmd = %Q! metaflac --show-tag=#{tag} "#{path}" !
@@ -125,4 +124,3 @@ class Anbt
       }
     end
   end
-end

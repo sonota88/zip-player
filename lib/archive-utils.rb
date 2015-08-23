@@ -212,7 +212,7 @@ def read_metadata(path, local_path)
       tr_num = comment.fields["TRACKNUMBER"].to_s
     end
   when /\.flac$/i
-    return Anbt::Flac::metadata(local_path)
+    return Flac::metadata(local_path)
   when ".mp3", ".MP3"
     artist_name = "{artist name}"
 
