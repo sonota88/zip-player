@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 require "rexml/document"
-require "channel"
 require "playlist"
 require "archive-utils"
 require "ya2yaml"
