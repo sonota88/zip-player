@@ -44,6 +44,7 @@ end
 
 init()
 
+require "utils"
 require "gui-tk"
 require "playlist"
 

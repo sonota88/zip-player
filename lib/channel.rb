@@ -1,7 +1,6 @@
 require "fileutils"
 require "pp"
 
-require "utils"
 require "anbt-ccl-util"
 
 TEMP_DIR = "temp"
