@@ -2,6 +2,7 @@
 
 require "tk"
 require "observer"
+require "yaml"
 
 require "archive-utils"
 require "flac"
