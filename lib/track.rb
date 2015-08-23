@@ -1,3 +1,5 @@
+require "anbt-ccl-util"
+
 class Track
   # essential
   attr_accessor :title, :artists, :path
