@@ -253,9 +253,9 @@ class Control
   end
 
 
-  def move(diff)
-    _debug "move: #{$pl.current_index} => #{$pl.current_index + diff} / {$pl.list.size-1}"
-    $pl.current_index += diff
+  def move(delta)
+    _debug "move: #{$pl.current_index} => #{$pl.current_index + delta} / {$pl.list.size-1}"
+    $pl.current_index += delta
     if $pl.current_index <= 0
       $pl.current_index = 0
     elsif $pl.current_index >= $pl.size
@@ -335,10 +335,10 @@ class Control
   end
 
 
-  def change_vol(diff)
+  def change_vol(delta)
     $pl.current_track.volume ||= DEFAULT_VOLUME
 
-    temp_vol = $pl.current_track.volume + diff
+    temp_vol = $pl.current_track.volume + delta
     if    temp_vol < 0   ; temp_vol = 0
     elsif temp_vol > 100 ; temp_vol = 100
     end
@@ -348,10 +348,10 @@ class Control
   end
 
 
-  def change_vol_global(diff)
+  def change_vol_global(delta)
     $pl.current_track.volume ||= DEFAULT_VOLUME
 
-    temp_vol = $Prefs.global_volume + diff
+    temp_vol = $Prefs.global_volume + delta
     if    temp_vol < 0   ; temp_vol = 0
     elsif temp_vol > 100 ; temp_vol = 100
     end
@@ -422,8 +422,8 @@ class Control
 
 
   def seek_percent_absolute(percent)
-    diff_sec_f = get_length_sec * (percent.to_f / 100) - get_time_sec # to - from
-    @player.seek_sec( diff_sec_f, :relative)
+    delta_sec_f = get_length_sec * (percent.to_f / 100) - get_time_sec # to - from
+    @player.seek_sec( delta_sec_f, :relative)
   end
 
   

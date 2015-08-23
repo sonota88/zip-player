@@ -143,8 +143,8 @@ class App
 
     # スライダーから離れたらシーク実行
     @seekbar.bind "ButtonRelease-1", proc { 
-      diff = @seekbar.value - @control.percent
-      _debug "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, diff ] 
+      delta = @seekbar.value - @control.percent
+      _debug "move from %.02f to #{@seekbar.value} (%.02f)" % [ @control.percent, delta ] 
       @control.seek_percent_absolute(@seekbar.value)
       @seekbar_pressed = false
     }
