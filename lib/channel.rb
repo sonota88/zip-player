@@ -23,45 +23,6 @@ class Channel
 end
 
 
-class PlayLists
-  include Enumerable
-
-  attr_accessor :h, :current_pl_name
-
-  def initialize
-    @current_pl_name = 'default'
-    @h = {@current_pl_name => PlayList.new($app)}
-  end
-
-  def current
-    @h[@current_pl_name]
-  end
-
-  def each
-    @h.each {|k,v|
-      yield(k, v)
-    }
-  end
-
-  def each_track
-    self.current.each{|t|
-      yield(t)
-    }
-  end
-
-  def current_track
-    self.current.current_track
-  end
-
-  def current_index
-    self.current.current_index
-  end
-  def current_index=(x)
-    self.current.current_index = x
-  end
-end
-
-
 if __FILE__ == $0
   ;
 end
