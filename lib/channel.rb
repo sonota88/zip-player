@@ -1,10 +1,3 @@
-require "fileutils"
-require "pp"
-
-
-TEMP_DIR = "temp"
-
-
 class Channel
   # essential
   attr_accessor :title, :list, :dj, :address, :base_url
@@ -17,9 +10,4 @@ class Channel
     @list = []
     @tags = []
   end
-end
-
-
-if __FILE__ == $0
-  ;
 end
