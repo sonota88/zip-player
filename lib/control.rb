@@ -15,10 +15,10 @@ $TEMP_IMAGE_BASENAME = "temp-image"
 Thread.abort_on_exception = true
 
 
-PrefPath = File.join( $app_home, "zip-player-pref.yaml" )
+PREF_PATH = File.join( $app_home, "zip-player-pref.yaml" )
 
-if File.exist?(PrefPath)
-  $Prefs = YAML.load( File.read(PrefPath) )
+if File.exist?(PREF_PATH)
+  $Prefs = YAML.load( File.read(PREF_PATH) )
   $Prefs.init
 else
   $Prefs = Preferences.new
@@ -504,7 +504,7 @@ class Control
   def app_exit
     stop()
     delete_temp_audio()
-    $Prefs.save(PrefPath)
+    $Prefs.save(PREF_PATH)
     exit
   end
 end
