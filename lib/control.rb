@@ -15,31 +15,30 @@ $TEMP_IMAGE_BASENAME = "temp-image"
 Thread.abort_on_exception = true
 
 
-PREF_PATH = File.join( $app_home, "zip-player-pref.yaml" )
-
-if File.exist?(PREF_PATH)
-  $Prefs = YAML.load( File.read(PREF_PATH) )
-  $Prefs.init
-else
-  $Prefs = Preferences.new
-end
-
-
 class Control
   include Observable
   attr_reader :percent, :data
 
   DEFAULT_VOLUME = 75
+  PREF_PATH = File.join( $app_home, "zip-player-pref.yaml" )
   
   def initialize(view)
+    if File.exist?(PREF_PATH)
+      @prefs = YAML.load( File.read(PREF_PATH) )
+      @prefs.init
+    else
+      @prefs = Preferences.new
+    end
+
     @view = view
+
     # " -nolirc -ao alsa -af volume=-100 "
     # @player = MPlayer.new(" -nolirc -af volume=-100 ")
     # @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
     @player = MPlayer.new(" -nolirc -ao pulse ")
     @data = {
       :current_tr => nil,
-      :global_volume => $Prefs.global_volume
+      :global_volume => @prefs.global_volume
     }
 
     @watcher = create_watcher_thread()
@@ -331,7 +330,7 @@ class Control
 
 
   def set_vol
-    @player.set_volume_abs( $Prefs.global_volume * $pl.current_track.volume / 100 )
+    @player.set_volume_abs( @prefs.global_volume * $pl.current_track.volume / 100 )
     refresh_info()
   end
 
@@ -352,11 +351,11 @@ class Control
   def change_vol_global(delta)
     $pl.current_track.volume ||= DEFAULT_VOLUME
 
-    temp_vol = $Prefs.global_volume + delta
+    temp_vol = @prefs.global_volume + delta
     if    temp_vol < 0   ; temp_vol = 0
     elsif temp_vol > 100 ; temp_vol = 100
     end
-    $Prefs.global_volume = temp_vol
+    @prefs.global_volume = temp_vol
     @data[:global_volume] = temp_vol
 
     set_vol()
@@ -506,7 +505,7 @@ class Control
   def app_exit
     stop()
     delete_temp_audio()
-    $Prefs.save(PREF_PATH)
+    @prefs.save(PREF_PATH)
     exit
   end
 end
