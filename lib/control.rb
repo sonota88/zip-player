@@ -38,7 +38,8 @@ class Control
     # @player = MPlayer.new(" -nolirc -ao pulse volume=-100 ")
     @player = MPlayer.new(" -nolirc -ao pulse ")
     @data = {
-      :current_tr => nil
+      :current_tr => nil,
+      :global_volume => $Prefs.global_volume
     }
 
     @watcher = create_watcher_thread()
@@ -356,6 +357,7 @@ class Control
     elsif temp_vol > 100 ; temp_vol = 100
     end
     $Prefs.global_volume = temp_vol
+    @data[:global_volume] = temp_vol
 
     set_vol()
   end

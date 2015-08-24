@@ -336,12 +336,13 @@ class App
 
   def update_info
     tr = @control.data[:current_tr]
+    g_vol = @control.data[:global_volume]
 
     set_label "title", "title: " + tr.title
     set_label "by", "by: " + tr.get_artists()
 
     info = ""
-    info << "volume: #{tr.volume} * #{$Prefs.global_volume} => #{tr.volume * $Prefs.global_volume / 100}"
+    info << "volume: #{tr.volume} * #{g_vol} => #{tr.volume * g_vol / 100}"
     info << "\n"
     info << "license: #{tr.license_abbr}"
     info << "\n"
