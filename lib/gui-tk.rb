@@ -87,7 +87,7 @@ class App
     monitor_font = TkFont.new({
                                 #'family' => 'pgothic',
                                 #'family' => 'fixed',
-                                'family' => 'FreeSans',
+                                'family' => 'Takaoゴシック',
                                 'weight' => 'bold',
                                 'slant' => 'roman',
                                 'underline' => false,
@@ -161,7 +161,7 @@ class App
       font TkFont.new({ 
                         #:family => 'gothic',
                         #:family => 'fixed',
-                        :family => 'FreeMono',
+                        :family => 'Takaoゴシック',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
@@ -183,7 +183,7 @@ class App
       font TkFont.new({ 
                         #:family => 'gothic',
                         #:family => 'fixed',
-                        :family => 'FreeMono',
+                        :family => 'Takaoゴシック',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
