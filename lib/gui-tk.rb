@@ -86,7 +86,8 @@ class App
 
     monitor_font = TkFont.new({
                                 #'family' => 'pgothic',
-                                'family' => 'fixed',
+                                #'family' => 'fixed',
+                                'family' => 'FreeSans',
                                 'weight' => 'bold',
                                 'slant' => 'roman',
                                 'underline' => false,
@@ -159,7 +160,8 @@ class App
       height 12
       font TkFont.new({ 
                         #:family => 'gothic',
-                        :family => 'fixed',
+                        #:family => 'fixed',
+                        :family => 'FreeMono',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
@@ -180,7 +182,8 @@ class App
       selectmode 'extended'
       font TkFont.new({ 
                         #:family => 'gothic',
-                        :family => 'fixed',
+                        #:family => 'fixed',
+                        :family => 'FreeMono',
                         :weight => 'normal',
                         :slant => 'roman',
                         :underline => false,
