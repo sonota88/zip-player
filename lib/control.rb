@@ -484,13 +484,7 @@ class Control
         _debug cmd
 
         require "tk-process-msg"
-        process_msg(cmd, :stderr) {|line|
-           if /(\d+%)\s(.+)\s(.+)/ =~ line
-             "%s(%s)" % [$1, $3]
-           else
-             "download by wget"
-           end
-        }
+        process_msg(cmd, {:auto_close_sec => 3})
       else
         $arc_file = arc_location
       end
