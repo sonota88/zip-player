@@ -3,3 +3,4 @@
 .bundle/
 vendor/
 zip-player-pref.yaml
+/temp/
