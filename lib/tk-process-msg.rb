@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-QUEUE_SIZE = 8
+PROCESS_MSG_QUEUE_SIZE = 8
 
 def process_msg_ex_to_s(ex)
   [
@@ -110,7 +110,7 @@ def process_msg(cmd, options)
         end
 
         queue << line_out
-        queue.shift if queue.size > QUEUE_SIZE
+        queue.shift if queue.size > PROCESS_MSG_QUEUE_SIZE
         sleep 0.01
       end
     rescue => e
@@ -129,7 +129,7 @@ def process_msg(cmd, options)
         end
 
         queue << "[E] " + line_err
-        queue.shift if queue.size > QUEUE_SIZE
+        queue.shift if queue.size > PROCESS_MSG_QUEUE_SIZE
         sleep 0.01
       end
     rescue => e
