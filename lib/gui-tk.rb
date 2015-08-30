@@ -10,7 +10,6 @@ require "control"
 
 
 $web_browser = "firefox"
-PLAYING_ITEM_BGCOLOR = "#cccccc"
 
 $image_manipulate = false
 begin
@@ -37,6 +36,8 @@ end
 
 class App
   attr_accessor :control
+
+  PLAYING_ITEM_BGCOLOR = "#cccccc"
 
   def initialize
     @control = Control.new(self)
