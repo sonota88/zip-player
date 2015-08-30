@@ -12,11 +12,11 @@ require "control"
 $web_browser = "firefox"
 $PLAYING_ITEM_BGCOLOR = "#cccccc"
 
-$ImageManipulate = false
+$image_manipulate = false
 begin
   require "tkextlib/tkimg"
   require "mini_magick"
-  $ImageManipulate = true
+  $image_manipulate = true
 rescue => e
   $stderr.puts e.message
 end
@@ -112,7 +112,7 @@ class App
       font monitor_font
     }
 
-    if $ImageManipulate
+    if $image_manipulate
       @lbl_cover = TkLabel.new(frame_outer)
     end
 
@@ -120,7 +120,7 @@ class App
     @lbl_by.pack(:fill => :both, :expand => true)
     @lbl_time.pack(:fill => :both, :expand => true)
 
-    @lbl_cover.pack(:side => :left) if $ImageManipulate
+    @lbl_cover.pack(:side => :left) if $image_manipulate
     frame_inner.pack(:fill => :both, :expand => true)
 
     frame_outer.pack(:fill => :both, :expand => true)
