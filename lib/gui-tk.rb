@@ -10,7 +10,7 @@ require "control"
 
 
 $web_browser = "firefox"
-$PLAYING_ITEM_BGCOLOR = "#cccccc"
+PLAYING_ITEM_BGCOLOR = "#cccccc"
 
 $image_manipulate = false
 begin
@@ -359,7 +359,7 @@ class App
 
   def update_current_track_highlight
     begin
-      @lbox_playlist.itemconfigure($pl.current_index, "background", $PLAYING_ITEM_BGCOLOR)
+      @lbox_playlist.itemconfigure($pl.current_index, "background", PLAYING_ITEM_BGCOLOR)
     rescue
       $stderr.puts $!
     end
