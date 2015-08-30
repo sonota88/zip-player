@@ -86,14 +86,14 @@ class App
     frame_inner = TkFrame.new(frame_outer)
 
     monitor_font = TkFont.new({
-                                #'family' => 'pgothic',
-                                #'family' => 'fixed',
-                                'family' => 'Takaoゴシック',
-                                'weight' => 'bold',
-                                'slant' => 'roman',
-                                'underline' => false,
-                                'overstrike' => false,
-                                "size" => 10
+                                #:family => 'pgothic',
+                                #:family => 'fixed',
+                                :family => 'Takaoゴシック',
+                                :weight => 'bold',
+                                :slant => 'roman',
+                                :underline => false,
+                                :overstrike => false,
+                                :size => 10
                               })
 
     @lbl_title = TkLabel.new(frame_inner) {
